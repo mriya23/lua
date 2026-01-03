@@ -1702,7 +1702,7 @@ DropdownReferences.InstantFishingMode = makeDropdown(catAutoFishing, "Instant Fi
         if mode == "Fast" and instant then instant.Start()
         elseif mode == "Perfect" and instant2 then instant2.Start() end
     end
-end, "InstantFishingMode", savedInstantMode)
+end)
 
 ToggleReferences.InstantFishing = makeToggle(catAutoFishing, "Enable Instant Fishing", function(on)
     isInstantFishingEnabled = on
