@@ -3218,15 +3218,6 @@ local function ApplyConfigToGUI()
         if ToggleReferences[refKey] and ToggleReferences[refKey].setOn then
             local val = GetConfigValue(configPath, false)
 
-            if refKey == "Sprint" then
-                print("[JackHub DEBUG] Sprint Config Value: ", val)
-                if val == true then
-                   SendNotification("Debug", "Sprint Loaded: ON (True)", 5)
-                else
-                   SendNotification("Debug", "Sprint Loaded: OFF (False/Nil)", 3)
-                end
-            end
-
             if type(val) == "boolean" then
                 ToggleReferences[refKey].setOn(val, false) 
             end
