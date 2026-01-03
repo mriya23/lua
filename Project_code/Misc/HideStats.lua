@@ -10,7 +10,7 @@ local HideStatsModule = {}
 local HideStatsEnabled = false
 local FakeName = "Bagi Sikrit bang"
 local FakeLevel = "1"
-local ScriptName = "-LynX-"
+local ScriptName = "-JackHub-"
 
 -- Variable untuk menyimpan original text
 local OriginalTexts = {}
@@ -87,7 +87,7 @@ end
 local function createScriptNameLabel(nameLabel, billboard)
     if not nameLabel or not billboard then return end
     
-    local existingFrame = billboard:FindFirstChild("LynxFrame")
+    local existingFrame = billboard:FindFirstChild("JackHubFrame")
     if existingFrame then 
         return existingFrame
     end
@@ -104,14 +104,14 @@ local function createScriptNameLabel(nameLabel, billboard)
     )
     
     local lynxFrame = Instance.new("Frame")
-    lynxFrame.Name = "LynxFrame"
+    lynxFrame.Name = "JackHubFrame"
     lynxFrame.Size = nameFrame.Size
     lynxFrame.Position = originalNamePos
     lynxFrame.BackgroundTransparency = 1
     lynxFrame.Parent = billboard
     
     local scriptLabel = nameLabel:Clone()
-    scriptLabel.Name = "LynxLabel"
+    scriptLabel.Name = "JackHubLabel"
     scriptLabel.Text = ScriptName
     scriptLabel.TextScaled = true
     scriptLabel.Font = Enum.Font.GothamBold
@@ -135,7 +135,7 @@ local function removeAllScriptNames()
     local overhead = hrp:FindFirstChild("Overhead")
     if not overhead then return end
     
-    local lynxFrame = overhead:FindFirstChild("LynxFrame")
+    local lynxFrame = overhead:FindFirstChild("JackHubFrame")
     if lynxFrame then
         for threadId, _ in pairs(ActiveGradientThreads) do
             ActiveGradientThreads[threadId] = nil
@@ -187,7 +187,7 @@ local function updateStats()
             
             if originalText and originalText ~= "" then
                 if obj.Name == "Header" then
-                    if not overhead:FindFirstChild("LynxFrame") then
+                    if not overhead:FindFirstChild("JackHubFrame") then
                         createScriptNameLabel(obj, overhead)
                     end
                     obj.Text = FakeName

@@ -9,7 +9,7 @@ local LocalPlayer = Players.LocalPlayer
 
 -- Parent ke PlayerGui AGAR TIDAK TERBLOCK EXECUTOR
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "LynxNotifications"
+ScreenGui.Name = "JackHubNotifications"
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
