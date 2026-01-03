@@ -656,6 +656,16 @@ local function ToggleMinimize()
     
     if win.Visible then
         -- Minimize: Hide Window
+        
+        -- POLICE: Destroy duplicate buttons before showing ours
+        local pGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+        -- Check for zombie ScreenGuis
+        for _, child in ipairs(pGui:GetChildren()) do
+             if child:IsA("ScreenGui") and child ~= gui and (string.find(child.Name, "JackHub") or child.Name == "JackHubGUI_Galaxy_v2.3") then
+                 pcall(function() child:Destroy() end)
+             end
+        end
+        
         win.Visible = false
         isMinimized = true
     else
