@@ -3286,6 +3286,8 @@ local function ApplyConfigToGUI()
             if type(val) == "table" then
                 if refKey == "AutoFavTiers" then
                     SendNotification("Debug", "DebugLoad: " .. tostring(#val) .. " Tiers found", 5)
+                elseif refKey == "AutoFavVariants" then
+                    SendNotification("Debug", "DebugLoad: " .. tostring(#val) .. " Variants found", 5)
                 end
                 
                 CheckboxReferences[refKey].SelectSpecific(val)
