@@ -3605,6 +3605,15 @@ ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
             return clean
         end
         
+        -- DEBUG: Show what's being saved
+        if configData.AutoFavorite and configData.AutoFavorite.EnabledTiers then
+            local tierCount = 0
+            for _ in pairs(configData.AutoFavorite.EnabledTiers) do tierCount = tierCount + 1 end
+            SendNotification("Debug", "DebugSave: " .. tostring(tierCount) .. " Tiers in config", 5)
+        else
+            SendNotification("Debug", "DebugSave: 0 Tiers in config", 5)
+        end
+        
         local cleanData = Sanitize(configData)
         if not cleanData then cleanData = {} end
         
