@@ -1649,9 +1649,13 @@ if ConfigSystem then
         
         -- Clone table to break reference
         if type(value) == "table" then
-            local clone = {}
-            for k, v in pairs(value) do clone[k] = v end
-            current[parts[#parts]] = clone
+            if table and table.clone then
+                 current[parts[#parts]] = table.clone(value)
+            else
+                 local clone = {}
+                 for k, v in pairs(value) do clone[k] = v end
+                 current[parts[#parts]] = clone
+            end
         else
             current[parts[#parts]] = value
         end
