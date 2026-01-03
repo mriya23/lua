@@ -3415,44 +3415,64 @@ ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
             makefolder("JackHubGUI_Configs")
         end
         
+        -- 1. Safely retrieve config
         local configData = {}
-        if ConfigSystem and ConfigSystem.GetConfig then
-            configData = ConfigSystem.GetConfig()
-        else
-            error("ConfigSystem unavailable")
-        end
+        local cfStatus, cfResult = pcall(function()
+            if ConfigSystem and ConfigSystem.GetConfig then
+                return ConfigSystem.GetConfig()
+            end
+            return {}
+        end)
         
-        -- Helper to sanitize data (Remove Instances/Functions/UserData)
-        local function Sanitize(tbl)
+        if not cfStatus then error("GetConfig Logic Error: " .. tostring(cfResult)) end
+        configData = cfResult or {}
+        
+        -- 2. Robust Sanitizer (Prevents Cycles & Stack Overflow)
+        local function Sanitize(tbl, depth, seen)
+            if depth and depth > 50 then return nil end -- Fail-safe depth limit
+            depth = depth or 0
+            seen = seen or {}
+            
             if type(tbl) ~= "table" then return tbl end
+            if seen[tbl] then return nil end -- Cycle detected
+            seen[tbl] = true
+            
             local clean = {}
             for k, v in pairs(tbl) do
-                local t = typeof(v)
-                if t == "table" then
-                    clean[k] = Sanitize(v)
-                elseif t == "string" or t == "number" or t == "boolean" then
-                    clean[k] = v
+                -- Enforce string/number keys for JSON
+                if type(k) == "string" or type(k) == "number" then
+                    local t = typeof(v)
+                    if t == "table" then
+                        local res = Sanitize(v, depth + 1, seen)
+                        if res ~= nil then clean[k] = res end
+                    elseif t == "string" or t == "number" or t == "boolean" then
+                        clean[k] = v
+                    end
                 end
-                -- Ignore unsupported types to prevent JSON crash
             end
             return clean
         end
         
         local cleanData = Sanitize(configData)
-        local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
+        if not cleanData then cleanData = {} end
         
+        -- 3. Encode & Write
         local jsonSuccess, json = pcall(function() return game:GetService("HttpService"):JSONEncode(cleanData) end)
         if not jsonSuccess then error("JSON Encode Fail: " .. tostring(json)) end
         
+        local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
         writefile(filePath, json)
     end)
     
     if success then
         SendNotification("Config", "💾 Saved: " .. configName, 3)
         configNameInput.Text = ""
-        task.delay(0.1, RefreshConfigList)
+        task.delay(0.1, function()
+            pcall(RefreshConfigList)
+        end)
     else
-        SendNotification("Config", "⚠ Save Error: " .. tostring(err), 4)
+        warn("JackHub Save Error Trace: " .. tostring(err))
+        SendNotification("Config", "⚠ Save Error: " .. tostring(err), 5)
     end
 end))
 
