@@ -1658,6 +1658,7 @@ local CheckboxReferences = {}
 -- ============================================
 -- AUTO FISHING
 -- ============================================
+do
 local catAutoFishing = makeCategory(mainPage, "Auto Fishing", "🎣")
 
 local savedInstantMode = GetConfigValue("InstantFishing.Mode", "Fast")
@@ -1759,9 +1760,9 @@ InputReferences.CancelDelay = makeInput(catAutoFishing, "Cancel Delay", savedCan
     
     local instant = GetModule("instant")
     local instant2 = GetModule("instant2")
-    if instant then instant.Settings.CancelDelay = v end
     if instant2 then instant2.Settings.CancelDelay = v end
 end)
+end
 
 -- ============================================
 -- BLATANT MODES
@@ -2176,6 +2177,7 @@ end
 -- ============================================
 -- TELEPORT PAGE
 -- ============================================
+do
 local TeleportModule = GetModule("TeleportModule")
 local TeleportToPlayer = GetModule("TeleportToPlayer")
 local SavedLocation = GetModule("SavedLocation")
@@ -2313,6 +2315,7 @@ if EventTeleport then
         end
     end)
 end
+end
 
 -- JackHubGUI v2.3.1 Performance Optimized - Part 5/8
 -- Shop Page & Webhook Configuration (Baris 2401-3000)
@@ -2320,6 +2323,7 @@ end
 -- ============================================
 -- SHOP PAGE
 -- ============================================
+do
 local AutoSell = GetModule("AutoSell")
 local MerchantSystem = GetModule("MerchantSystem")
 local RemoteBuyer = GetModule("RemoteBuyer")
@@ -2494,6 +2498,7 @@ if RemoteBuyer then
             SendNotification("Buy Bait", "Pilih bait dulu!", 3)
         end
     end)
+end
 end
 
 -- ============================================
