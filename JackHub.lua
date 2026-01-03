@@ -176,7 +176,7 @@ function LoadingNotification.Create()
         local notifFrame = new("Frame", {
             Parent = notifGui,
             Size = UDim2.new(0, 340, 0, 100),
-            Position = UDim2.new(1, -360, 1, -120),
+            Position = UDim2.new(0.5, -170, 0.5, -50),
             BackgroundColor3 = Color3.fromRGB(0, 0, 0),
             BackgroundTransparency = 0.15,
             BorderSizePixel = 0
@@ -244,9 +244,9 @@ function LoadingNotification.Create()
         LoadingNotification.ProgressBg = progressBg
         LoadingNotification.TitleLabel = titleLabel
         
-        notifFrame.Position = UDim2.new(1, 20, 1, -120)
-        local tween = TweenService:Create(notifFrame, TweenInfo.new(0.6, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-            Position = UDim2.new(1, -360, 1, -120)
+        notifFrame.Position = UDim2.new(0.5, -170, -0.5, 0) -- Start above center
+        local tween = TweenService:Create(notifFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0.5, -170, 0.5, -50) -- Animate to center
         })
         ConnectionManager:AddTween(tween)
         tween:Play()
@@ -259,8 +259,7 @@ function LoadingNotification.Update(loadedCount, totalCount, currentModule)
     pcall(function()
         if LoadingNotification.StatusLabel then
             local percent = math.floor((loadedCount / totalCount) * 100)
-            LoadingNotification.StatusLabel.Text = string.format("%d/%d (%d%%) - %s", 
-                loadedCount, totalCount, percent, currentModule or "...")
+            LoadingNotification.StatusLabel.Text = string.format("Loading modules... %d%%", percent)
         end
         
         if LoadingNotification.ProgressBar and LoadingNotification.ProgressBg then
