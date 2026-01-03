@@ -627,15 +627,19 @@ for _, existingBtn in ipairs(gui:GetChildren()) do
 end
 
 -- Create Floating Restore Button (Hidden by default)
-local restoreBtn = new("ImageButton", {
+local btnID = math.random(100, 999) -- DEBUG ID
+local restoreBtn = new("TextButton", { -- Changed to TextButton to show ID
     Name = "JackHubFloatingButton", 
-    Parent = gui, -- FIXED: Must be inside the ScreenGui
+    Parent = gui, 
     Size = UDim2.new(0, 50, 0, 50),
     Position = UDim2.new(0, 30, 0.5, -25), 
     BackgroundColor3 = colors.bg2,
     BackgroundTransparency = 0.2,
     BorderSizePixel = 0,
-    Image = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420", 
+    Text = tostring(btnID), -- Show ID
+    TextColor3 = colors.text,
+    TextSize = 14,
+    Font = Enum.Font.GothamBold,
     Visible = false, -- Default to Hidden
     AutoButtonColor = false,
     ZIndex = 200 
