@@ -3214,17 +3214,43 @@ local function RefreshConfigList()
             
             -- Load button click
             ConnectionManager:Add(loadBtn.MouseButton1Click:Connect(function()
+                local loaded = false
                 pcall(function()
                     local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
                     if isfile(filePath) then
                         local content = readfile(filePath)
                         local data = game:GetService("HttpService"):JSONDecode(content)
-                        if ConfigSystem and ConfigSystem.ApplyConfig then
-                            ConfigSystem.ApplyConfig(data)
+                        
+                        -- Apply config values recursively
+                        local function ApplyRecursive(tbl, prefix)
+                            for key, value in pairs(tbl) do
+                                local path = prefix == "" and key or (prefix .. "." .. key)
+                                if type(value) == "table" then
+                                    ApplyRecursive(value, path)
+                                else
+                                    if ConfigSystem and ConfigSystem.Set then
+                                        ConfigSystem.Set(path, value)
+                                    end
+                                end
+                            end
                         end
-                        SendNotification("Config", "✓ Loaded: " .. configName, 3)
+                        
+                        ApplyRecursive(data, "")
+                        
+                        -- Save to make it persistent
+                        if ConfigSystem and ConfigSystem.Save then
+                            ConfigSystem.Save()
+                        end
+                        
+                        loaded = true
                     end
                 end)
+                
+                if loaded then
+                    SendNotification("Config", "✓ Loaded: " .. configName .. "\nRe-execute script to apply!", 5)
+                else
+                    SendNotification("Config", "⚠ Failed to load config", 3)
+                end
             end))
             
             -- Delete button click
@@ -3270,8 +3296,8 @@ ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
         end
         
         local configData = {}
-        if ConfigSystem and ConfigSystem.GetCurrentConfig then
-            configData = ConfigSystem.GetCurrentConfig()
+        if ConfigSystem and ConfigSystem.GetConfig then
+            configData = ConfigSystem.GetConfig()
         end
         
         local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
