@@ -3328,7 +3328,7 @@ local function RefreshConfigList()
             -- Load button click
             ConnectionManager:Add(loadBtn.MouseButton1Click:Connect(function()
                 local loaded = false
-                pcall(function()
+                local success, err = pcall(function()
                     local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
                     if isfile(filePath) then
                         local content = readfile(filePath)
@@ -3356,18 +3356,20 @@ local function RefreshConfigList()
                         end
                         
                         loaded = true
+                    else
+                        error("File not found")
                     end
                 end)
                 
-                if loaded then
+                if success and loaded then
                     SendNotification("Config", "✓ Loaded: " .. configName, 2)
                     
-                    -- Apply config to GUI immediately (no re-execute needed!)
+                    -- Apply config to GUI immediately
                     task.delay(0.3, function()
                         ApplyConfigToGUI()
                     end)
                 else
-                    SendNotification("Config", "⚠ Failed to load config", 3)
+                    SendNotification("Config", "⚠ Load Fail: " .. tostring(err), 4)
                 end
             end))
             
@@ -3408,7 +3410,7 @@ ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
         configName = "Config_" .. os.date("%Y%m%d_%H%M%S")
     end
     
-    pcall(function()
+    local success, err = pcall(function()
         if not isfolder("JackHubGUI_Configs") then
             makefolder("JackHubGUI_Configs")
         end
@@ -3416,15 +3418,21 @@ ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
         local configData = {}
         if ConfigSystem and ConfigSystem.GetConfig then
             configData = ConfigSystem.GetConfig()
+        else
+            error("ConfigSystem unavailable")
         end
         
         local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
         writefile(filePath, game:GetService("HttpService"):JSONEncode(configData))
-        
+    end)
+    
+    if success then
         SendNotification("Config", "💾 Saved: " .. configName, 3)
         configNameInput.Text = ""
-        RefreshConfigList()
-    end)
+        task.delay(0.1, RefreshConfigList)
+    else
+        SendNotification("Config", "⚠ Save Error: " .. tostring(err), 4)
+    end
 end))
 
 -- Initial load of config list
