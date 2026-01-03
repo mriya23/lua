@@ -1636,6 +1636,7 @@ if ConfigSystem then
     ConfigSystem.ConfigValues = {}
     
     function ConfigSystem.Set(path, value)
+        -- print("[JackHub SET] " .. tostring(path) .. " = " .. tostring(value))
         local parts = {}
         for part in string.gmatch(path, "[^%.]+") do
             table.insert(parts, part)
@@ -3579,10 +3580,12 @@ ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
         
         local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
         writefile(filePath, json)
+        return #json
     end)
     
     if success then
-        SendNotification("Config", "💾 Saved: " .. configName, 3)
+        local displaySize = type(err) == "number" and err or "?"
+        SendNotification("Config", "💾 Saved: " .. configName .. " (" .. tostring(displaySize) .. " B)", 3)
         configNameInput.Text = ""
         task.delay(0.1, function()
             pcall(RefreshConfigList)
