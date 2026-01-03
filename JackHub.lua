@@ -537,51 +537,7 @@ local appTitle = new("TextLabel", {
     ZIndex = 6
 })
 
--- User Profile
-local userProfile = new("Frame", {
-    Parent = scriptHeader,
-    Size = UDim2.new(0, 160, 1, 0),
-    Position = UDim2.new(1, -270, 0, 0),
-    BackgroundTransparency = 1,
-    ZIndex = 6
-})
 
-local userAvatar = new("ImageLabel", {
-    Parent = userProfile,
-    Size = UDim2.new(0, 32, 0, 32),
-    Position = UDim2.new(1, -32, 0.5, -16),
-    BackgroundTransparency = 1,
-    Image = game:GetService("Players"):GetUserThumbnailAsync(localPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420),
-    ZIndex = 7
-})
-new("UICorner", {Parent = userAvatar, CornerRadius = UDim.new(1, 0)})
-new("UIStroke", {Parent = userAvatar, Color = colors.bg3, Thickness = 2})
-
-local userName = new("TextLabel", {
-    Parent = userProfile,
-    Text = localPlayer.DisplayName,
-    Size = UDim2.new(1, -44, 0, 20),
-    Position = UDim2.new(0, 0, 0.5, -12),
-    BackgroundTransparency = 1,
-    Font = Enum.Font.GothamBold,
-    TextSize = 13,
-    TextColor3 = colors.text,
-    TextXAlignment = Enum.TextXAlignment.Right,
-    ZIndex = 7
-})
-
-new("TextLabel", {
-    Parent = userProfile,
-    Text = "@" .. localPlayer.Name,
-    Size = UDim2.new(1, -44, 0, 14),
-    Position = UDim2.new(0, 0, 0.5, 4),
-    BackgroundTransparency = 1,
-    Font = Enum.Font.Gotham,
-    TextSize = 10,
-    TextColor3 = colors.textDim,
-    TextXAlignment = Enum.TextXAlignment.Right,
-    ZIndex = 7
-})
 
 -- Header Buttons
 local headerBtns = new("Frame", {
@@ -754,6 +710,66 @@ local cameraViewPage = createPage("CameraView")
 local settingsPage = createPage("Settings")
 local infoPage = createPage("Info")
 mainPage.Visible = true
+
+-- Welcome Card (Dashboard)
+local welcomeCard = new("Frame", {
+    Parent = mainPage,
+    Size = UDim2.new(1, 0, 0, 80),
+    BackgroundColor3 = colors.bg2,
+    BackgroundTransparency = 0.5,
+    BorderSizePixel = 0,
+    LayoutOrder = -1 
+})
+new("UICorner", {Parent = welcomeCard, CornerRadius = UDim.new(0, 12)})
+new("UIStroke", {Parent = welcomeCard, Color = colors.bg3, Thickness = 1.5})
+new("UIPadding", {Parent = welcomeCard, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
+
+local avatarContainer = new("Frame", {
+    Parent = welcomeCard,
+    Size = UDim2.new(0, 50, 0, 50),
+    Position = UDim2.new(0, 0, 0.5, -25),
+    BackgroundTransparency = 1
+})
+local avatarImg = new("ImageLabel", {
+    Parent = avatarContainer,
+    Size = UDim2.new(1, 0, 1, 0),
+    Image = game:GetService("Players"):GetUserThumbnailAsync(localPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150),
+    BackgroundTransparency = 1,
+    ZIndex = 2
+})
+new("UICorner", {Parent = avatarImg, CornerRadius = UDim.new(1, 0)})
+new("UIStroke", {Parent = avatarImg, Color = colors.primary, Thickness = 2})
+
+local textContainer = new("Frame", {
+    Parent = welcomeCard,
+    Size = UDim2.new(1, -66, 1, 0),
+    Position = UDim2.new(0, 66, 0, 0),
+    BackgroundTransparency = 1
+})
+
+new("TextLabel", {
+    Parent = textContainer,
+    Text = "Welcome Back,",
+    Size = UDim2.new(1, 0, 0, 20),
+    Position = UDim2.new(0, 0, 0.5, -14),
+    Font = Enum.Font.Gotham,
+    TextSize = 13,
+    TextColor3 = colors.textDim,
+    BackgroundTransparency = 1,
+    TextXAlignment = Enum.TextXAlignment.Left
+})
+
+new("TextLabel", {
+    Parent = textContainer,
+    Text = localPlayer.DisplayName,
+    Size = UDim2.new(1, 0, 0, 24),
+    Position = UDim2.new(0, 0, 0.5, 6),
+    Font = Enum.Font.GothamBold,
+    TextSize = 18,
+    TextColor3 = colors.text,
+    BackgroundTransparency = 1,
+    TextXAlignment = Enum.TextXAlignment.Left
+})
 
 local function switchPage(pageName)
     if currentPage == pageName then return end
