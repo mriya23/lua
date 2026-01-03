@@ -14,8 +14,8 @@ local function CloseExistingGUI()
     
     -- Remove ALL instances with matching name (prevents duplicates from fast re-execution)
     for _, child in ipairs(playerGui:GetChildren()) do
-        if child:IsA("ScreenGui") and (child.Name == GUI_IDENTIFIER or child.Name == "JackHubLoadingNotification") then
-            child:Destroy()
+        if child:IsA("ScreenGui") and (string.find(child.Name, "JackHub") or child.Name == GUI_IDENTIFIER) then
+            pcall(function() child:Destroy() end)
         end
     end
     
@@ -641,10 +641,12 @@ local restoreBtn = new("ImageButton", {
     ZIndex = 200 
 })
 
--- SIMPLE FIX: Button visibility is ALWAYS opposite of Window visibility
-game:GetService("RunService").Heartbeat:Connect(function()
+-- SIMPLE FIX: Button visibility is ALWAYS opposite of Window visibility + ZOMBIE CHECK
+local hb = game:GetService("RunService").Heartbeat:Connect(function()
+    if not win or not win.Parent or not restoreBtn then return end -- Stop if destroyed
     restoreBtn.Visible = not win.Visible
 end)
+ConnectionManager:Add(hb)
 new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
 new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
 
