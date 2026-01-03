@@ -41,6 +41,8 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local localPlayer = Players.LocalPlayer
+local CleanupGUI -- Forward declaration
+
 
 repeat task.wait() until localPlayer:FindFirstChild("PlayerGui")
 
@@ -563,7 +565,7 @@ new("TextLabel", {
 local btnMinHeader = new("TextButton", {
     Parent = scriptHeader,
     Size = UDim2.new(0, 30, 0, 30),
-    Position = UDim2.new(1, -38, 0.5, -15),
+    Position = UDim2.new(1, -74, 0.5, -15),
     BackgroundColor3 = colors.bg4,
     BackgroundTransparency = 0.5,
     BorderSizePixel = 0,
@@ -609,6 +611,73 @@ ConnectionManager:Add(btnMinHeader.MouseLeave:Connect(function()
     ConnectionManager:AddTween(tween2)
     tween1:Play()
     tween2:Play()
+end))
+
+-- Close Button
+local btnCloseHeader = new("TextButton", {
+    Parent = scriptHeader,
+    Size = UDim2.new(0, 30, 0, 30),
+    Position = UDim2.new(1, -38, 0.5, -15),
+    BackgroundColor3 = colors.bg4,
+    BackgroundTransparency = 0.5,
+    BorderSizePixel = 0,
+    Text = "×",
+    Font = Enum.Font.GothamBold,
+    TextSize = 22,
+    TextColor3 = colors.textDim,
+    TextTransparency = 0.3,
+    AutoButtonColor = false,
+    ZIndex = 7
+})
+new("UICorner", {Parent = btnCloseHeader, CornerRadius = UDim.new(0, 8)})
+
+local btnCloseStroke = new("UIStroke", {
+    Parent = btnCloseHeader,
+    Color = colors.danger,
+    Thickness = 0,
+    Transparency = 0.8
+})
+
+ConnectionManager:Add(btnCloseHeader.MouseEnter:Connect(function()
+    local t1 = TweenService:Create(btnCloseHeader, TweenInfo.new(0.25), {
+        BackgroundColor3 = colors.danger, -- Use danger color (Red)
+        BackgroundTransparency = 0.2,
+        TextTransparency = 0,
+        TextColor3 = Color3.new(1,1,1)
+    })
+    local t2 = TweenService:Create(btnCloseStroke, TweenInfo.new(0.25), {Thickness = 1.5, Transparency = 0.4})
+    ConnectionManager:AddTween(t1)
+    ConnectionManager:AddTween(t2)
+    t1:Play()
+    t2:Play()
+end))
+
+ConnectionManager:Add(btnCloseHeader.MouseLeave:Connect(function()
+    local t1 = TweenService:Create(btnCloseHeader, TweenInfo.new(0.25), {
+        BackgroundColor3 = colors.bg4,
+        BackgroundTransparency = 0.5,
+        TextTransparency = 0.3,
+        TextColor3 = colors.textDim
+    })
+    local t2 = TweenService:Create(btnCloseStroke, TweenInfo.new(0.25), {Thickness = 0, Transparency = 0.8})
+    ConnectionManager:AddTween(t1)
+    ConnectionManager:AddTween(t2)
+    t1:Play()
+    t2:Play()
+end))
+
+ConnectionManager:Add(btnCloseHeader.MouseButton1Click:Connect(function()
+    if CleanupGUI then 
+        CleanupGUI() 
+    else
+        -- Fallback if CleanupGUI is somehow nil (should be covered by forward declaration)
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Error",
+            Text = "Cleanup function not found!",
+            Duration = 3
+        })
+        if gui then gui:Destroy() end
+    end
 end))
 
 -- Navigation Container
@@ -3756,7 +3825,7 @@ end
 -- GUI CLEANUP & DESTROY HANDLER
 -- ============================================
 
-local function CleanupGUI()
+CleanupGUI = function()
     print("🧹 Cleaning up JackHubGUI...")
     
     -- 1. Cancel all running tasks
