@@ -1733,7 +1733,6 @@ TrackedSpawn(function()
         if currentInstantMode == "Fast" and instant then instant.Start()
         elseif currentInstantMode == "Perfect" and instant2 then instant2.Start() end
     end
-    end
 end)
 
 InputReferences.FishingDelay = makeInput(catAutoFishing, "Fishing Delay", savedFishingDelay, function(v)
@@ -1754,7 +1753,6 @@ InputReferences.CancelDelay = makeInput(catAutoFishing, "Cancel Delay", savedCan
     local instant2 = GetModule("instant2")
     if instant then instant.Settings.CancelDelay = v end
     if instant2 then instant2.Settings.CancelDelay = v end
-end)
 end)
 
 -- ============================================
