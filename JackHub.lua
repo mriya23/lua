@@ -3484,16 +3484,14 @@ local function RefreshConfigList()
             
             -- Delete button click
             ConnectionManager:Add(deleteBtn.MouseButton1Click:Connect(function()
-                local deleted = false
-                pcall(function()
+                local success, err = pcall(function()
                     local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
                     if isfile(filePath) then
                         delfile(filePath)
-                        deleted = true
                     end
                 end)
                 
-                if deleted then
+                if success then
                     SendNotification("Config", "🗑️ Deleted: " .. configName, 3)
                     
                     -- Instant UI Update (No Refresh needed)
