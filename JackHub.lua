@@ -636,18 +636,19 @@ new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
 new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
 
 local function ToggleMinimize()
-    if isMinimized then
-        -- Restore
-        restoreBtn.Visible = false
-        win.Visible = true
-        TweenService:Create(win, TweenInfo.new(0.4, Enum.EasingStyle.Back), {Size = savedSize}):Play()
-        isMinimized = false
-    else
-        -- Minimize
+    if win.Visible then
+        -- Minimize: Hide Window, Show Floating Button
         savedSize = win.Size
         win.Visible = false
         restoreBtn.Visible = true
         isMinimized = true
+    else
+        -- Restore: Show Window, Hide Floating Button
+        restoreBtn.Visible = false
+        win.Visible = true
+        win.Size = UDim2.new(0, 0, 0, 0) -- Reset size for animation
+        TweenService:Create(win, TweenInfo.new(0.4, Enum.EasingStyle.Back), {Size = savedSize}):Play()
+        isMinimized = false
     end
 end
 
