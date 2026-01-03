@@ -466,7 +466,335 @@ local colors = {
 }
 
 -- ============================================
--- GUI STRUCTURE
+-- GUI STRUCTURE (REBUILT FOR v3.1)
+-- ============================================
+
+-- Responsive Logic
+local viewport = workspace.CurrentCamera.ViewportSize
+local isSmallScreen = viewport.X < 800 or game:GetService("UserInputService").TouchEnabled
+
+local windowSize
+if isSmallScreen then
+    local w = math.clamp(viewport.X * 0.85, 400, 600)
+    local h = math.clamp(viewport.Y * 0.70, 300, 450)
+    windowSize = UDim2.new(0, w, 0, h)
+else
+    windowSize = UDim2.new(0, 680, 0, 450)
+end
+
+local gui = new("ScreenGui", {
+    Name = GUI_IDENTIFIER,
+    Parent = localPlayer.PlayerGui,
+    IgnoreGuiInset = true,
+    ResetOnSpawn = false,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    DisplayOrder = 2147483647
+})
+
+local function bringToFront() gui.DisplayOrder = 2147483647 end
+
+-- Main Window
+local win = new("Frame", {
+    Parent = gui,
+    Size = windowSize,
+    Position = UDim2.new(0.5, -windowSize.X.Offset/2, 0.5, -windowSize.Y.Offset/2),
+    BackgroundColor3 = colors.bg1,
+    BackgroundTransparency = 0.05,
+    BorderSizePixel = 0,
+    ClipsDescendants = false,
+    ZIndex = 3
+})
+new("UICorner", {Parent = win, CornerRadius = UDim.new(0, 16)})
+new("UIStroke", {Parent = win, Color = colors.bg3, Thickness = 2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border})
+
+-- Header
+local scriptHeader = new("Frame", {
+    Parent = win,
+    Size = UDim2.new(1, 0, 0, 60),
+    BackgroundTransparency = 1,
+    ZIndex = 5
+})
+
+local appIcon = new("ImageLabel", {
+    Parent = scriptHeader,
+    Size = UDim2.new(0, 28, 0, 28),
+    Position = UDim2.new(0, 16, 0.5, -14),
+    BackgroundTransparency = 1,
+    Image = "rbxassetid://108722323724088",
+    ZIndex = 6
+})
+
+local appTitle = new("TextLabel", {
+    Parent = scriptHeader,
+    Text = "JackHub v3.1",
+    Font = Enum.Font.GothamBlack,
+    TextSize = 20,
+    TextColor3 = colors.text,
+    Size = UDim2.new(0, 200, 1, 0),
+    Position = UDim2.new(0, 54, 0, 0),
+    BackgroundTransparency = 1,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    ZIndex = 6
+})
+
+-- Header Buttons
+local headerBtns = new("Frame", {
+    Parent = scriptHeader,
+    Size = UDim2.new(0, 100, 1, 0),
+    Position = UDim2.new(1, -110, 0, 0),
+    BackgroundTransparency = 1,
+    ZIndex = 6
+})
+new("UIListLayout", {Parent = headerBtns, FillDirection=Enum.FillDirection.Horizontal, HorizontalAlignment=Enum.HorizontalAlignment.Right, VerticalAlignment=Enum.VerticalAlignment.Center, Padding=UDim.new(0,8)})
+
+local btnMinHeader = new("TextButton", {
+    Parent = headerBtns,
+    Size = UDim2.new(0, 32, 0, 32),
+    BackgroundColor3 = colors.bg3,
+    BackgroundTransparency = 0.5,
+    Text = "—",
+    Font=Enum.Font.GothamBold,
+    TextColor3=colors.textDim,
+    AutoButtonColor=false,
+    ZIndex=7
+})
+new("UICorner", {Parent = btnMinHeader, CornerRadius=UDim.new(1,0)})
+
+local btnCloseHeader = new("TextButton", {
+    Parent = headerBtns,
+    Size = UDim2.new(0, 32, 0, 32),
+    BackgroundColor3 = colors.danger,
+    BackgroundTransparency = 0.2,
+    Text = "×",
+    Font = Enum.Font.GothamBold,
+    TextSize = 18,
+    TextColor3 = Color3.new(1,1,1),
+    AutoButtonColor = false,
+    ZIndex = 7
+})
+new("UICorner", {Parent = btnCloseHeader, CornerRadius=UDim.new(1,0)})
+
+ConnectionManager:Add(btnCloseHeader.MouseButton1Click:Connect(function()
+    if CleanupGUI then CleanupGUI() else if gui then gui:Destroy() end end
+end))
+
+-- Top Nav
+local navContainer = new("ScrollingFrame", {
+    Parent = win,
+    Size = UDim2.new(1, -40, 0, 45),
+    Position = UDim2.new(0, 20, 0, 60),
+    BackgroundTransparency = 1,
+    ScrollBarThickness = 0,
+    AutomaticCanvasSize = Enum.AutomaticSize.X,
+    CanvasSize = UDim2.new(0,0,0,0),
+    ClipsDescendants = true,
+    ZIndex = 5
+})
+new("UIListLayout", {Parent = navContainer, FillDirection=Enum.FillDirection.Horizontal, Padding=UDim.new(0,10), SortOrder=Enum.SortOrder.LayoutOrder, VerticalAlignment=Enum.VerticalAlignment.Center})
+
+local sidebar = navContainer -- Alias compat
+
+-- Content Area
+local contentBg = new("Frame", {
+    Parent = win,
+    Size = UDim2.new(1, -40, 1, -120),
+    Position = UDim2.new(0, 20, 0, 115),
+    BackgroundColor3 = colors.bg1,
+    BackgroundTransparency = 1,
+    ClipsDescendants = true,
+    ZIndex = 4
+})
+
+-- Resize Handle
+local resizeHandle = new("TextButton", {
+    Parent = win,
+    Size = UDim2.new(0, 18, 0, 18),
+    Position = UDim2.new(1, -18, 1, -18),
+    BackgroundTransparency = 1,
+    Text = "◢",
+    TextColor3 = colors.textDim,
+    ZIndex = 100
+})
+
+-- Minimize Logic
+local isMinimized = false
+local savedSize = windowSize
+local UserInputService = game:GetService("UserInputService")
+
+local restoreBtn = new("ImageButton", {
+    Parent = gui,
+    Size = UDim2.new(0, 48, 0, 48),
+    Position = UDim2.new(0, 30, 0.5, -24),
+    BackgroundColor3 = colors.bg2,
+    BackgroundTransparency = 0.2,
+    Image = "rbxassetid://108722323724088",
+    Visible = false,
+    ZIndex = 200
+})
+new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
+new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
+
+local function ToggleMinimize()
+    if isMinimized then
+        -- Restore
+        restoreBtn.Visible = false
+        win.Visible = true
+        TweenService:Create(win, TweenInfo.new(0.4, Enum.EasingStyle.Back), {Size = savedSize}):Play()
+        isMinimized = false
+    else
+        -- Minimize
+        savedSize = win.Size
+        win.Visible = false
+        restoreBtn.Visible = true
+        isMinimized = true
+    end
+end
+
+ConnectionManager:Add(restoreBtn.MouseButton1Click:Connect(ToggleMinimize))
+ConnectionManager:Add(btnMinHeader.MouseButton1Click:Connect(ToggleMinimize))
+ConnectionManager:Add(UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.RightControl then ToggleMinimize() end
+end))
+
+-- Draggable Restore Button
+local draggingRestore, dragInputRestore, dragStartRestore, startPosRestore
+ConnectionManager:Add(restoreBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingRestore = true
+        dragStartRestore = input.Position
+        startPosRestore = restoreBtn.Position
+        input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then draggingRestore = false end end)
+    end
+end))
+ConnectionManager:Add(restoreBtn.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInputRestore = input end
+end))
+ConnectionManager:Add(UserInputService.InputChanged:Connect(function(input)
+    if input == dragInputRestore and draggingRestore then
+        local delta = input.Position - dragStartRestore
+        restoreBtn.Position = UDim2.new(startPosRestore.X.Scale, startPosRestore.X.Offset + delta.X, startPosRestore.Y.Scale, startPosRestore.Y.Offset + delta.Y)
+    end
+end))
+
+-- Pages Setup
+local pages = {}
+local currentPage = "Main"
+local navButtons = {}
+
+local function createPage(name)
+    local page = new("ScrollingFrame", {
+        Parent = contentBg,
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        ScrollBarThickness = 3,
+        ScrollBarImageColor3 = colors.primary,
+        CanvasSize = UDim2.new(0,0,0,0),
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        Visible = false,
+        ClipsDescendants = false,
+        ZIndex = 5
+    })
+    new("UIListLayout", {Parent = page, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder})
+    new("UIPadding", {Parent = page, PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8)})
+    pages[name] = page
+    return page
+end
+
+local mainPage = createPage("Main")
+local teleportPage = createPage("Teleport")
+local shopPage = createPage("Shop")
+local webhookPage = createPage("Webhook")
+local cameraViewPage = createPage("CameraView")
+local settingsPage = createPage("Settings")
+local infoPage = createPage("Info")
+mainPage.Visible = true
+
+local function switchPage(pageName)
+    if currentPage == pageName then return end
+    currentPage = pageName
+    for name, page in pairs(pages) do page.Visible = (name == pageName) end
+    for name, btnData in pairs(navButtons) do
+        local isActive = (name == pageName)
+        TweenService:Create(btnData.btn, TweenInfo.new(0.3), {BackgroundTransparency = isActive and 0 or 1, BackgroundColor3 = isActive and colors.bg3 or colors.bg1}):Play()
+        TweenService:Create(btnData.label, TweenInfo.new(0.3), {TextColor3 = isActive and colors.text or colors.textDim}):Play()
+        TweenService:Create(btnData.icon, TweenInfo.new(0.3), {TextColor3 = isActive and colors.primary or colors.textDim}):Play()
+    end
+end
+
+local function createNavButton(text, icon, page, order)
+    local btn = new("TextButton", {
+        Parent = navContainer,
+        AutomaticSize = Enum.AutomaticSize.X,
+        Size = UDim2.new(0, 0, 1, 0),
+        BackgroundColor3 = colors.bg1,
+        BackgroundTransparency = 1,
+        Text = "",
+        AutoButtonColor = false,
+        LayoutOrder = order,
+        ZIndex = 6
+    })
+    new("UICorner", {Parent = btn, CornerRadius = UDim.new(1,0)})
+    new("UIPadding", {Parent = btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16)})
+    
+    local content = new("Frame", {
+        Parent = btn,
+        Size = UDim2.new(1,0,1,0),
+        BackgroundTransparency=1,
+        ZIndex=7
+    })
+    new("UIListLayout", {Parent=content, FillDirection=Enum.FillDirection.Horizontal, Padding=UDim.new(0,8), VerticalAlignment=Enum.VerticalAlignment.Center, HorizontalAlignment=Enum.HorizontalAlignment.Center})
+    
+    local iconLabel = new("TextLabel", {
+        Parent = content,
+        Text = icon,
+        Font = Enum.Font.GothamMedium,
+        TextSize = 16,
+        TextColor3 = colors.textDim,
+        BackgroundTransparency = 1,
+        AutomaticSize = Enum.AutomaticSize.XY,
+        LayoutOrder = 1,
+        ZIndex = 7
+    })
+    
+    local textLabel = new("TextLabel", {
+        Parent = content,
+        Text = text,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextColor3 = colors.textDim,
+        BackgroundTransparency = 1,
+        AutomaticSize = Enum.AutomaticSize.XY,
+        LayoutOrder = 2,
+        ZIndex = 7
+    })
+
+    ConnectionManager:Add(btn.MouseEnter:Connect(function()
+        if page ~= currentPage then
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency=0.8}):Play()
+        end
+    end))
+    ConnectionManager:Add(btn.MouseLeave:Connect(function()
+        if page ~= currentPage then
+            TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency=1}):Play()
+        end
+    end))
+    ConnectionManager:Add(btn.MouseButton1Click:Connect(function() switchPage(page) end))
+
+    navButtons[page] = {btn=btn, icon=iconLabel, label=textLabel}
+    return btn
+end
+
+createNavButton("Dashboard", "🏠", "Main", 1)
+createNavButton("Teleport", "🌍", "Teleport", 2)
+createNavButton("Shop", "🛒", "Shop", 3)
+createNavButton("Webhook", "🔗", "Webhook", 4)
+createNavButton("Camera", "📷", "CameraView", 5)
+createNavButton("Settings", "⚙️", "Settings", 6)
+createNavButton("About", "ℹ️", "Info", 7)
+
+-- Update initial state
+switchPage("Main")
+
 -- ============================================
 -- Responsive Logic
 local viewport = workspace.CurrentCamera.ViewportSize
