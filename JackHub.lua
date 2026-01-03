@@ -520,23 +520,14 @@ local scriptHeader = new("Frame", {
     ZIndex = 5
 })
 
-local appIcon = new("ImageLabel", {
-    Parent = scriptHeader,
-    Size = UDim2.new(0, 28, 0, 28),
-    Position = UDim2.new(0, 16, 0.5, -14),
-    BackgroundTransparency = 1,
-    Image = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420",
-    ZIndex = 6
-})
-
 local appTitle = new("TextLabel", {
     Parent = scriptHeader,
-    Text = "JackHub v3.1",
+    Text = "JackHub",
     Font = Enum.Font.GothamBlack,
     TextSize = 20,
     TextColor3 = colors.text,
     Size = UDim2.new(0, 200, 1, 0),
-    Position = UDim2.new(0, 54, 0, 0),
+    Position = UDim2.new(0, 16, 0, 0),
     BackgroundTransparency = 1,
     TextXAlignment = Enum.TextXAlignment.Left,
     ZIndex = 6
