@@ -633,14 +633,9 @@ local restoreBtn = new("ImageButton", {
     ZIndex = 200 
 })
 
--- NUCLEAR OPTION: Constant check to ensure they are NEVER both visible
--- This fixes any sync issues or lag spikes causing double UI
+-- SIMPLE FIX: Button visibility is ALWAYS opposite of Window visibility
 game:GetService("RunService").Heartbeat:Connect(function()
-    if win.Visible and restoreBtn.Visible then
-        restoreBtn.Visible = false
-    elseif not win.Visible and not restoreBtn.Visible then
-        restoreBtn.Visible = true
-    end
+    restoreBtn.Visible = not win.Visible
 end)
 new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
 new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
