@@ -2115,7 +2115,7 @@ if AutoFavorite then
     TrackedSpawn(function()
         task.wait(0.5)
         local tiers = GetConfigValue("AutoFavorite.EnabledTiers", {})
-        -- SendNotification("Debug", "AutoFav Tiers Loaded: " .. tostring(#tiers), 4)
+        SendNotification("Debug", "AutoFav Loaded: " .. tostring(#tiers) .. " Tiers", 4)
         
         if CheckboxReferences.AutoFavTiers then CheckboxReferences.AutoFavTiers.SelectSpecific(tiers) end
         
