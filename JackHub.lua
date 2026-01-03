@@ -1790,14 +1790,14 @@ ToggleReferences.BlatantTester = makeToggle(catBlatantV2, "Blatant Tester", func
     end
 end)
 
-makeInput(catBlatantV2, "Complete Delay", savedBlatantTesterCompleteDelay, function(v)
+InputReferences.BlatantCompleteDelay = makeInput(catBlatantV2, "Complete Delay", savedBlatantTesterCompleteDelay, function(v)
     SetConfigValue("BlatantTester.CompleteDelay", v)
     
     local blatantv2fix = GetModule("blatantv2fix")
     if blatantv2fix then blatantv2fix.Settings.CompleteDelay = v end
 end)
 
-makeInput(catBlatantV2, "Cancel Delay", savedBlatantTesterCancelDelay, function(v)
+InputReferences.BlatantCancelDelay = makeInput(catBlatantV2, "Cancel Delay", savedBlatantTesterCancelDelay, function(v)
     SetConfigValue("BlatantTester.CancelDelay", v)
     
     local blatantv2fix = GetModule("blatantv2fix")
@@ -2848,13 +2848,15 @@ end)
 local catMovement = makeCategory(settingsPage, "Player Utility", "🏃")
 
 -- Sprint Speed Input
-makeInput(catMovement, "Sprint Speed", 50, function(v)
+InputReferences.SprintSpeed = makeInput(catMovement, "Sprint Speed", GetConfigValue("Movement.SprintSpeed", 50), function(v)
+    SetConfigValue("Movement.SprintSpeed", v)
     local MovementModule = GetModule("MovementModule")
     if MovementModule then MovementModule.SetSprintSpeed(v) end
 end)
 
 -- Sprint Toggle
 ToggleReferences.Sprint = makeToggle(catMovement, "Enable Sprint", function(on)
+    SetConfigValue("Movement.SprintEnabled", on)
     local MovementModule = GetModule("MovementModule")
     if MovementModule then
         if on then 
@@ -2867,6 +2869,7 @@ end)
 
 -- Infinite Jump Toggle
 ToggleReferences.InfiniteJump = makeToggle(catMovement, "Enable Infinite Jump", function(on)
+    SetConfigValue("Movement.InfiniteJump", on)
     local MovementModule = GetModule("MovementModule")
     if MovementModule then
         if on then 
@@ -3106,6 +3109,8 @@ local function ApplyConfigToGUI()
         {"FPSBooster", "Settings.FPSBooster"},
         {"DisableRendering", "Settings.DisableRendering"},
         {"HideStats", "Settings.HideStats.Enabled"},
+        {"Sprint", "Movement.SprintEnabled"},
+        {"InfiniteJump", "Movement.InfiniteJump"},
     }
     
     local inputMappings = {
@@ -3116,6 +3121,9 @@ local function ApplyConfigToGUI()
         {"DiscordID", "Webhook.DiscordID"},
         {"FreecamSpeed", "CameraView.Freecam.Speed"},
         {"FreecamSensitivity", "CameraView.Freecam.Sensitivity"},
+        {"BlatantCompleteDelay", "BlatantTester.CompleteDelay"},
+        {"BlatantCancelDelay", "BlatantTester.CancelDelay"},
+        {"SprintSpeed", "Movement.SprintSpeed"},
     }
     
     local dropdownMappings = {
