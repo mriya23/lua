@@ -121,7 +121,7 @@ local function SendNotification(title, text, duration)
             Title = title,
             Text = text,
             Duration = duration or 5,
-            Icon = "rbxassetid://132401777513761"
+            Icon = "rbxassetid://87557537572594"
         })
     end)
 end
@@ -143,7 +143,7 @@ local function SendNotification(title, text, duration)
             Title = title,
             Text = text,
             Duration = duration or 5,
-            Icon = "rbxassetid://132401777513761"
+            Icon = "rbxassetid://87557537572594"
         })
     end)
 end
@@ -188,7 +188,7 @@ function LoadingNotification.Create()
             Size = UDim2.new(0, 45, 0, 45),
             Position = UDim2.new(0, 18, 0, 12),
             BackgroundTransparency = 1,
-            Image = "rbxassetid://132401777513761",
+            Image = "rbxassetid://87557537572594",
             ScaleType = Enum.ScaleType.Fit,
             ZIndex = 3
         })
@@ -518,7 +518,7 @@ local appIcon = new("ImageLabel", {
     Size = UDim2.new(0, 28, 0, 28),
     Position = UDim2.new(0, 16, 0.5, -14),
     BackgroundTransparency = 1,
-    Image = "rbxassetid://132401777513761",
+    Image = "rbxassetid://87557537572594",
     ZIndex = 6
 })
 
@@ -3259,7 +3259,7 @@ local function createMinimizedIcon()
         BackgroundColor3 = colors.bg2,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
-        Image = "rbxassetid://132401777513761",
+        Image = "rbxassetid://87557537572594",
         ScaleType = Enum.ScaleType.Fit,
         ZIndex = 100
     })
