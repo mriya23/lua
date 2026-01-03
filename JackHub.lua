@@ -2107,8 +2107,26 @@ if AutoFavorite then
     
     TrackedSpawn(function()
         task.wait(0.5)
-        if CheckboxReferences.AutoFavTiers then CheckboxReferences.AutoFavTiers.SelectSpecific(GetConfigValue("AutoFavorite.EnabledTiers", {})) end
-        if CheckboxReferences.AutoFavVariants then CheckboxReferences.AutoFavVariants.SelectSpecific(GetConfigValue("AutoFavorite.EnabledVariants", {})) end
+        local tiers = GetConfigValue("AutoFavorite.EnabledTiers", {})
+        if CheckboxReferences.AutoFavTiers then CheckboxReferences.AutoFavTiers.SelectSpecific(tiers) end
+        
+        -- Force Module Update (AutoFavorite)
+        if AutoFavorite then
+            pcall(function()
+                AutoFavorite.ClearTiers()
+                AutoFavorite.EnableTiers(tiers)
+            end)
+        end
+        
+        local variants = GetConfigValue("AutoFavorite.EnabledVariants", {})
+        if CheckboxReferences.AutoFavVariants then CheckboxReferences.AutoFavVariants.SelectSpecific(variants) end
+        
+        if AutoFavorite then
+             pcall(function()
+                AutoFavorite.ClearVariants()
+                AutoFavorite.EnableVariants(variants)
+            end)
+        end
     end)
 end
 
