@@ -3045,86 +3045,246 @@ makeButton(catServer, "Rejoin Server", function()
     SendNotification("Rejoin", "Teleporting to new server...", 3)
 end)
 
-local catConfig = makeCategory(settingsPage, "Configuration Management", "💾")
+local catConfig = makeCategory(settingsPage, "Save Config", "💾")
 
-local configStatusContainer = new("Frame", {
+-- Config name input
+local configInputContainer = new("Frame", {
     Parent = catConfig,
-    Size = UDim2.new(1, 0, 0, 85),
+    Size = UDim2.new(1, 0, 0, 40),
     BackgroundColor3 = colors.bg3,
     BackgroundTransparency = 0.8,
     BorderSizePixel = 0,
     ZIndex = 7
 })
-new("UICorner", {Parent = configStatusContainer, CornerRadius = UDim.new(0, 8)})
+new("UICorner", {Parent = configInputContainer, CornerRadius = UDim.new(0, 8)})
 
-local configStatusText = new("TextLabel", {
-    Parent = configStatusContainer,
-    Size = UDim2.new(1, -24, 1, -24),
-    Position = UDim2.new(0, 12, 0, 12),
-    BackgroundTransparency = 1,
-    Text = "Loading config status...",
-    Font = Enum.Font.GothamBold,
-    TextSize = 9,
+local configNameInput = new("TextBox", {
+    Parent = configInputContainer,
+    Size = UDim2.new(1, -120, 0, 30),
+    Position = UDim2.new(0, 10, 0.5, -15),
+    BackgroundColor3 = colors.bg2,
+    BackgroundTransparency = 0.5,
+    BorderSizePixel = 0,
+    Text = "",
+    PlaceholderText = "Enter config name...",
+    Font = Enum.Font.Gotham,
+    TextSize = 12,
     TextColor3 = colors.text,
-    TextWrapped = true,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    TextYAlignment = Enum.TextYAlignment.Top,
+    PlaceholderColor3 = colors.textDim,
+    ClearTextOnFocus = false,
     ZIndex = 8
 })
+new("UICorner", {Parent = configNameInput, CornerRadius = UDim.new(0, 6)})
 
--- Update status indicator
-TrackedSpawn(function()
-    task.wait(1)
-    while true do
-        task.wait(2)
-        pcall(function()
-            if ConfigSystem and configStatusText and configStatusText.Parent then
-                local hasConfigFile = false
-                pcall(function() hasConfigFile = isfile("JackHubGUI_Configs/jackhub_config.json") end)
-                
-                local hasUnsaved = ConfigSystem.HasUnsavedChanges()
-                local statusIcon = hasConfigFile and "✅" or "⚠️"
-                local statusMsg = hasConfigFile and "Config file exists" or "No config saved yet"
-                local unsavedMsg = hasUnsaved and "\n⚠️ Unsaved changes (minimize to save)" or "\n✅ All changes saved"
-                
-                configStatusText.Text = string.format(
-                    "📦 CONFIG STATUS\n%s %s%s\n\n💡 Auto-save on minimize!\n📁 Folder: JackHubGUI_Configs\n📄 File: jackhub_config.json",
-                    statusIcon, statusMsg, unsavedMsg
-                )
-                
-                configStatusText.TextColor3 = hasUnsaved and colors.warning or colors.text
+local saveConfigBtn = new("TextButton", {
+    Parent = configInputContainer,
+    Size = UDim2.new(0, 90, 0, 30),
+    Position = UDim2.new(1, -100, 0.5, -15),
+    BackgroundColor3 = colors.primary,
+    BorderSizePixel = 0,
+    Text = "💾 Save",
+    Font = Enum.Font.GothamBold,
+    TextSize = 12,
+    TextColor3 = colors.text,
+    AutoButtonColor = true,
+    ZIndex = 8
+})
+new("UICorner", {Parent = saveConfigBtn, CornerRadius = UDim.new(0, 6)})
+
+-- Saved configs list container
+local savedConfigsLabel = new("TextLabel", {
+    Parent = catConfig,
+    Size = UDim2.new(1, 0, 0, 25),
+    BackgroundTransparency = 1,
+    Text = "📁 Saved Configs:",
+    Font = Enum.Font.GothamBold,
+    TextSize = 12,
+    TextColor3 = colors.text,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    ZIndex = 7
+})
+
+local configListContainer = new("ScrollingFrame", {
+    Parent = catConfig,
+    Size = UDim2.new(1, 0, 0, 120),
+    BackgroundColor3 = colors.bg3,
+    BackgroundTransparency = 0.8,
+    BorderSizePixel = 0,
+    ScrollBarThickness = 4,
+    ScrollBarImageColor3 = colors.primary,
+    CanvasSize = UDim2.new(0, 0, 0, 0),
+    ZIndex = 7
+})
+new("UICorner", {Parent = configListContainer, CornerRadius = UDim.new(0, 8)})
+new("UIListLayout", {Parent = configListContainer, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.Name})
+new("UIPadding", {Parent = configListContainer, PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4), PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4)})
+
+-- Function to get all saved configs
+local function GetSavedConfigs()
+    local configs = {}
+    pcall(function()
+        if isfolder and isfolder("JackHubGUI_Configs") then
+            local files = listfiles("JackHubGUI_Configs")
+            for _, file in ipairs(files) do
+                local name = file:match("([^/\\]+)%.json$")
+                if name then
+                    table.insert(configs, name)
+                end
             end
-        end)
+        end
+    end)
+    return configs
+end
+
+-- Function to refresh config list
+local function RefreshConfigList()
+    -- Clear existing items
+    for _, child in ipairs(configListContainer:GetChildren()) do
+        if child:IsA("Frame") then child:Destroy() end
     end
+    
+    local configs = GetSavedConfigs()
+    
+    if #configs == 0 then
+        local noConfigLabel = new("TextLabel", {
+            Parent = configListContainer,
+            Size = UDim2.new(1, -8, 0, 30),
+            BackgroundTransparency = 1,
+            Text = "No saved configs yet",
+            Font = Enum.Font.GothamItalic,
+            TextSize = 11,
+            TextColor3 = colors.textDim,
+            ZIndex = 8
+        })
+    else
+        for _, configName in ipairs(configs) do
+            local itemFrame = new("Frame", {
+                Parent = configListContainer,
+                Size = UDim2.new(1, -8, 0, 32),
+                BackgroundColor3 = colors.bg2,
+                BackgroundTransparency = 0.5,
+                BorderSizePixel = 0,
+                ZIndex = 8
+            })
+            new("UICorner", {Parent = itemFrame, CornerRadius = UDim.new(0, 6)})
+            
+            local nameLabel = new("TextLabel", {
+                Parent = itemFrame,
+                Size = UDim2.new(1, -140, 1, 0),
+                Position = UDim2.new(0, 8, 0, 0),
+                BackgroundTransparency = 1,
+                Text = "📄 " .. configName,
+                Font = Enum.Font.Gotham,
+                TextSize = 11,
+                TextColor3 = colors.text,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                TextTruncate = Enum.TextTruncate.AtEnd,
+                ZIndex = 9
+            })
+            
+            local loadBtn = new("TextButton", {
+                Parent = itemFrame,
+                Size = UDim2.new(0, 55, 0, 24),
+                Position = UDim2.new(1, -130, 0.5, -12),
+                BackgroundColor3 = colors.success,
+                BorderSizePixel = 0,
+                Text = "Load",
+                Font = Enum.Font.GothamBold,
+                TextSize = 10,
+                TextColor3 = colors.text,
+                AutoButtonColor = true,
+                ZIndex = 9
+            })
+            new("UICorner", {Parent = loadBtn, CornerRadius = UDim.new(0, 4)})
+            
+            local deleteBtn = new("TextButton", {
+                Parent = itemFrame,
+                Size = UDim2.new(0, 55, 0, 24),
+                Position = UDim2.new(1, -70, 0.5, -12),
+                BackgroundColor3 = colors.danger,
+                BorderSizePixel = 0,
+                Text = "Delete",
+                Font = Enum.Font.GothamBold,
+                TextSize = 10,
+                TextColor3 = colors.text,
+                AutoButtonColor = true,
+                ZIndex = 9
+            })
+            new("UICorner", {Parent = deleteBtn, CornerRadius = UDim.new(0, 4)})
+            
+            -- Load button click
+            ConnectionManager:Add(loadBtn.MouseButton1Click:Connect(function()
+                pcall(function()
+                    local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
+                    if isfile(filePath) then
+                        local content = readfile(filePath)
+                        local data = game:GetService("HttpService"):JSONDecode(content)
+                        if ConfigSystem and ConfigSystem.ApplyConfig then
+                            ConfigSystem.ApplyConfig(data)
+                        end
+                        SendNotification("Config", "✓ Loaded: " .. configName, 3)
+                    end
+                end)
+            end))
+            
+            -- Delete button click
+            ConnectionManager:Add(deleteBtn.MouseButton1Click:Connect(function()
+                pcall(function()
+                    local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
+                    if isfile(filePath) then
+                        delfile(filePath)
+                        SendNotification("Config", "🗑️ Deleted: " .. configName, 3)
+                        RefreshConfigList()
+                    end
+                end)
+            end))
+        end
+    end
+    
+    -- Update canvas size
+    local layout = configListContainer:FindFirstChild("UIListLayout")
+    if layout then
+        configListContainer.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 8)
+    end
+end
+
+-- Save button click
+ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
+    local configName = configNameInput.Text:gsub("[^%w%s%-_]", ""):gsub("^%s+", ""):gsub("%s+$", "")
+    
+    if configName == "" then
+        configName = "Config_" .. os.date("%Y%m%d_%H%M%S")
+    end
+    
+    pcall(function()
+        if not isfolder("JackHubGUI_Configs") then
+            makefolder("JackHubGUI_Configs")
+        end
+        
+        local configData = {}
+        if ConfigSystem and ConfigSystem.GetCurrentConfig then
+            configData = ConfigSystem.GetCurrentConfig()
+        end
+        
+        local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
+        writefile(filePath, game:GetService("HttpService"):JSONEncode(configData))
+        
+        SendNotification("Config", "💾 Saved: " .. configName, 3)
+        configNameInput.Text = ""
+        RefreshConfigList()
+    end)
+end))
+
+-- Initial load of config list
+TrackedSpawn(function()
+    task.wait(0.5)
+    RefreshConfigList()
 end)
 
--- Manual save button (still available)
-makeButton(catConfig, "💾 Save Now (Manual)", function()
-    if ConfigSystem then
-        local success, message = ConfigSystem.Save()
-        if success then
-            ConfigSystem.MarkAsSaved()
-            SendNotification("Config", "✓ Configuration saved!", 3)
-        else
-            SendNotification("Config Error", message or "Failed to save", 3)
-        end
-    else
-        SendNotification("Error", "ConfigSystem not loaded!", 3)
-    end
-end)
-
-makeButton(catConfig, "🔄 Reload Config", function()
-    if ConfigSystem then
-        local success = ConfigSystem.Load()
-        if success then
-            ConfigSystem.MarkAsSaved()
-            SendNotification("Config", "✓ Configuration reloaded!", 3)
-        else
-            SendNotification("Config", "⚠ No saved config found", 3)
-        end
-    else
-        SendNotification("Error", "ConfigSystem not loaded!", 3)
-    end
+-- Quick actions
+makeButton(catConfig, "🔄 Refresh List", function()
+    RefreshConfigList()
+    SendNotification("Config", "✓ Config list refreshed!", 2)
 end)
 
 makeButton(catConfig, "🔃 Reset to Default", function()
@@ -3134,18 +3294,6 @@ makeButton(catConfig, "🔃 Reset to Default", function()
             SendNotification("Config", "✓ Reset to defaults!", 3)
         else
             SendNotification("Error", message or "Failed to reset", 3)
-        end
-    else
-        SendNotification("Error", "ConfigSystem not loaded!", 3)
-    end
-end)
-
-makeButton(catConfig, "🗑️ Delete Config File", function()
-    if ConfigSystem then
-        if ConfigSystem.Delete() then
-            SendNotification("Config", "✓ Config file deleted!", 3)
-        else
-            SendNotification("Config", "⚠ No config file found", 3)
         end
     else
         SendNotification("Error", "ConfigSystem not loaded!", 3)
