@@ -11,23 +11,22 @@ local GUI_IDENTIFIER = "JackHubGUI_Galaxy_v2.3"
 
 local function CloseExistingGUI()
     local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
-    local existingGUI = playerGui:FindFirstChild(GUI_IDENTIFIER)
     
-    if existingGUI then
-        pcall(function()
-            local mainFrame = existingGUI:FindFirstChild("Frame")
-            if mainFrame then
-                game:GetService("TweenService"):Create(
-                    mainFrame, 
-                    TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
-                    {Size = UDim2.new(0, 0, 0, 0)}
-                ):Play()
-            end
-        end)
-        task.wait(0.35)
-        existingGUI:Destroy()
-        task.wait(0.2)
+    -- Remove ALL instances with matching name (prevents duplicates from fast re-execution)
+    for _, child in ipairs(playerGui:GetChildren()) do
+        if child:IsA("ScreenGui") and child.Name == GUI_IDENTIFIER then
+            pcall(function()
+                -- Quick fade out
+                for _, descendant in ipairs(child:GetDescendants()) do
+                    if descendant:IsA("Frame") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
+                        pcall(function() descendant.Visible = false end)
+                    end
+                end
+                child:Destroy()
+            end)
+        end
     end
+    task.wait(0.1) -- Brief wait to ensure cleanup
 end
 
 CloseExistingGUI()
