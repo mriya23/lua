@@ -3495,8 +3495,17 @@ local function RefreshConfigList()
                 
                 if deleted then
                     SendNotification("Config", "🗑️ Deleted: " .. configName, 3)
-                    task.wait(0.2) -- Wait for file system sync
-                    RefreshConfigList()
+                    
+                    -- Instant UI Update (No Refresh needed)
+                    if itemFrame then itemFrame:Destroy() end
+                    
+                    -- Update Layout
+                    task.delay(0.05, function()
+                        local layout = configListContainer:FindFirstChild("UIListLayout")
+                        if layout then
+                            configListContainer.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 8)
+                        end
+                    end)
                 else
                     SendNotification("Config", "⚠ Failed to delete", 3)
                 end
