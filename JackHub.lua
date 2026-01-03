@@ -19,9 +19,18 @@ local function CloseExistingGUI()
         end
     end
     
-    -- Explicitly remove any stray floating buttons
+    -- AGGRESSIVE: Find and destroy ANY floating button anywhere in PlayerGui
+    for _, descendant in ipairs(playerGui:GetDescendants()) do
+        if descendant.Name == "JackHubFloatingButton" then 
+            pcall(function() descendant:Destroy() end)
+        end
+    end
+    
+    -- Also check for orphaned floating buttons at PlayerGui level
     for _, child in ipairs(playerGui:GetChildren()) do
-        if child.Name == "JackHubFloatingButton" then child:Destroy() end
+        if child.Name == "JackHubFloatingButton" then 
+            pcall(function() child:Destroy() end)
+        end
     end
     
     task.wait(0.1) -- Brief wait to ensure cleanup
