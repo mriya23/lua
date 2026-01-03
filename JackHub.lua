@@ -1090,8 +1090,13 @@ local function makeInput(parent, label, defaultValue, callback)
         if value then pcall(callback, value) else inputBox.Text = tostring(defaultValue) end
     end))
     
-    inputBox.SetValue = function(val) inputBox.Text = tostring(val); pcall(callback, val) end
-    return inputBox
+    return {
+        Instance = inputBox,
+        SetValue = function(val)
+            inputBox.Text = tostring(val)
+            pcall(callback, val)
+        end
+    }
 end
 
 -- Button (Optimized)
@@ -1312,8 +1317,10 @@ local function makeDropdown(parent, title, icon, items, onSelect, uniqueId, defa
         end)
     end
     
-    dropdownFrame.SetValue = function(val) setSelectedItem(val, true) end -- Exposed for config loading
-    return dropdownFrame
+    return {
+        Instance = dropdownFrame,
+        SetValue = function(val) setSelectedItem(val, true) end
+    }
 end
 
 -- Checkbox List (Optimized)
@@ -2566,14 +2573,16 @@ local webhookTextBox = new("TextBox", {
 })
 
 -- Allow external update
-webhookTextBox.SetValue = function(val)
-    webhookTextBox.Text = tostring(val)
-    currentWebhookURL = tostring(val)
-    if WebhookModule and currentWebhookURL ~= "" then
-        pcall(function() WebhookModule:SetWebhookURL(currentWebhookURL) end)
+InputReferences.WebhookURL = {
+    Instance = webhookTextBox,
+    SetValue = function(val)
+        webhookTextBox.Text = tostring(val)
+        currentWebhookURL = tostring(val)
+        if WebhookModule and currentWebhookURL ~= "" then
+            pcall(function() WebhookModule:SetWebhookURL(currentWebhookURL) end)
+        end
     end
-end
-InputReferences.WebhookURL = webhookTextBox
+}
 
 if isWebhookSupported then
     ConnectionManager:Add(webhookTextBox.FocusLost:Connect(function()
@@ -2637,14 +2646,16 @@ local discordIDTextBox = new("TextBox", {
 })
 
 -- Allow external update
-discordIDTextBox.SetValue = function(val)
-    discordIDTextBox.Text = tostring(val)
-    currentDiscordID = tostring(val)
-    if WebhookModule then
-        pcall(function() WebhookModule:SetDiscordUserID(currentDiscordID) end)
+InputReferences.DiscordID = {
+    Instance = discordIDTextBox,
+    SetValue = function(val)
+        discordIDTextBox.Text = tostring(val)
+        currentDiscordID = tostring(val)
+        if WebhookModule then
+            pcall(function() WebhookModule:SetDiscordUserID(currentDiscordID) end)
+        end
     end
-end
-InputReferences.DiscordID = discordIDTextBox
+}
 
 if isWebhookSupported then
     ConnectionManager:Add(discordIDTextBox.FocusLost:Connect(function()
