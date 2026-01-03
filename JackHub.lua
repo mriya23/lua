@@ -1653,6 +1653,7 @@ end
 local ToggleReferences = {}
 local InputReferences = {}
 local DropdownReferences = {}
+local CheckboxReferences = {}
 
 -- ============================================
 -- AUTO FISHING
@@ -1831,14 +1832,14 @@ ToggleReferences.BlatantV1 = makeToggle(catBlatantV1, "Blatant Mode", function(o
     end
 end)
 
-makeInput(catBlatantV1, "Complete Delay", savedBlatantV1CompleteDelay, function(v)
+InputReferences.BlatantV1CompleteDelay = makeInput(catBlatantV1, "Complete Delay", savedBlatantV1CompleteDelay, function(v)
     SetConfigValue("BlatantV1.CompleteDelay", v)
     
     local blatantv1 = GetModule("blatantv1")
     if blatantv1 then blatantv1.Settings.CompleteDelay = v end
 end)
 
-makeInput(catBlatantV1, "Cancel Delay", savedBlatantV1CancelDelay, function(v)
+InputReferences.BlatantV1CancelDelay = makeInput(catBlatantV1, "Cancel Delay", savedBlatantV1CancelDelay, function(v)
     SetConfigValue("BlatantV1.CancelDelay", v)
     
     local blatantv1 = GetModule("blatantv1")
@@ -1873,7 +1874,7 @@ ToggleReferences.UltraBlatant = makeToggle(catUltraBlatant, "Blatant Mode", func
     end
 end)
 
-makeInput(catUltraBlatant, "Complete Delay", savedUltraBlatantCompleteDelay, function(v)
+InputReferences.UltraBlatantCompleteDelay = makeInput(catUltraBlatant, "Complete Delay", savedUltraBlatantCompleteDelay, function(v)
     SetConfigValue("UltraBlatant.CompleteDelay", v)
     
     local UltraBlatant = GetModule("UltraBlatant")
@@ -1886,7 +1887,7 @@ makeInput(catUltraBlatant, "Complete Delay", savedUltraBlatantCompleteDelay, fun
     end
 end)
 
-makeInput(catUltraBlatant, "Cancel Delay", savedUltraBlatantCancelDelay, function(v)
+InputReferences.UltraBlatantCancelDelay = makeInput(catUltraBlatant, "Cancel Delay", savedUltraBlatantCancelDelay, function(v)
     SetConfigValue("UltraBlatant.CancelDelay", v)
     
     local UltraBlatant = GetModule("UltraBlatant")
@@ -1911,21 +1912,21 @@ ToggleReferences.FastAutoPerfect = makeToggle(catBlatantV2Fast, "Fast Fishing Fe
     end
 end)
 
-makeInput(catBlatantV2Fast, "Fishing Delay", GetConfigValue("FastAutoPerfect.FishingDelay", 0.05), function(v)
+InputReferences.FastAutoFishingDelay = makeInput(catBlatantV2Fast, "Fishing Delay", GetConfigValue("FastAutoPerfect.FishingDelay", 0.05), function(v)
     SetConfigValue("FastAutoPerfect.FishingDelay", v)
     
     local blatantv2 = GetModule("blatantv2")
     if blatantv2 then blatantv2.Settings.FishingDelay = v end
 end)
 
-makeInput(catBlatantV2Fast, "Cancel Delay", GetConfigValue("FastAutoPerfect.CancelDelay", 0.01), function(v)
+InputReferences.FastAutoCancelDelay = makeInput(catBlatantV2Fast, "Cancel Delay", GetConfigValue("FastAutoPerfect.CancelDelay", 0.01), function(v)
     SetConfigValue("FastAutoPerfect.CancelDelay", v)
     
     local blatantv2 = GetModule("blatantv2")
     if blatantv2 then blatantv2.Settings.CancelDelay = v end
 end)
 
-makeInput(catBlatantV2Fast, "Timeout Delay", GetConfigValue("FastAutoPerfect.TimeoutDelay", 0.8), function(v)
+InputReferences.FastAutoTimeoutDelay = makeInput(catBlatantV2Fast, "Timeout Delay", GetConfigValue("FastAutoPerfect.TimeoutDelay", 0.8), function(v)
     SetConfigValue("FastAutoPerfect.TimeoutDelay", v)
     
     local blatantv2 = GetModule("blatantv2")
@@ -2029,7 +2030,7 @@ local catAutoFav = makeCategory(mainPage, "Auto Favorite", "⭐")
 local AutoFavorite = GetModule("AutoFavorite")
 
 if AutoFavorite then
-    local tierSys = makeCheckboxDropdown(catAutoFav, "Tier Filter", AutoFavorite.GetAllTiers(), {
+    CheckboxReferences.AutoFavTiers = makeCheckboxDropdown(catAutoFav, "Tier Filter", AutoFavorite.GetAllTiers(), {
         Common = Color3.fromRGB(150, 150, 150), 
         Uncommon = Color3.fromRGB(76, 175, 80), 
         Rare = Color3.fromRGB(33, 150, 243), 
@@ -2041,20 +2042,18 @@ if AutoFavorite then
         AutoFavorite.ClearTiers() 
         AutoFavorite.EnableTiers(sel) 
         SetConfigValue("AutoFavorite.EnabledTiers", sel) 
-         
     end)
     
-    local varSys = makeCheckboxDropdown(catAutoFav, "Variant Filter", AutoFavorite.GetAllVariants(), nil, function(sel) 
+    CheckboxReferences.AutoFavVariants = makeCheckboxDropdown(catAutoFav, "Variant Filter", AutoFavorite.GetAllVariants(), nil, function(sel) 
         AutoFavorite.ClearVariants() 
         AutoFavorite.EnableVariants(sel) 
         SetConfigValue("AutoFavorite.EnabledVariants", sel) 
-         
     end)
     
     TrackedSpawn(function()
         task.wait(0.5)
-        tierSys.SelectSpecific(GetConfigValue("AutoFavorite.EnabledTiers", {}))
-        varSys.SelectSpecific(GetConfigValue("AutoFavorite.EnabledVariants", {}))
+        if CheckboxReferences.AutoFavTiers then CheckboxReferences.AutoFavTiers.SelectSpecific(GetConfigValue("AutoFavorite.EnabledTiers", {})) end
+        if CheckboxReferences.AutoFavVariants then CheckboxReferences.AutoFavVariants.SelectSpecific(GetConfigValue("AutoFavorite.EnabledVariants", {})) end
     end)
 end
 
@@ -2129,7 +2128,7 @@ makeButton(catSkin, "💀 Soul Scythe", function()
     end
 end)
 
-makeToggle(catSkin, "Enable Skin Animation", function(on)
+ToggleReferences.SkinAnimation = makeToggle(catSkin, "Enable Skin Animation", function(on)
     SetConfigValue("Support.SkinAnimation.Enabled", on)
     
     local SkinAnimation = GetModule("SkinAnimation")
@@ -2260,7 +2259,7 @@ if EventTeleport then
     
     if #eventNames == 0 then eventNames = {"- No events available -"} end
     
-    makeDropdown(catTeleport, "Pilih Event", "📌", eventNames, function(selected)
+    DropdownReferences.EventTeleport = makeDropdown(catTeleport, "Pilih Event", "📌", eventNames, function(selected)
         if selected ~= "- No events available -" then
             selectedEventName = selected
             SetConfigValue("Teleport.LastEventSelected", selected)
@@ -2358,7 +2357,7 @@ local catWeather = makeCategory(shopPage, "Auto Buy Weather", "🌦️")
 local AutoBuyWeather = GetModule("AutoBuyWeather")
 
 if AutoBuyWeather then
-    local weatherCheckboxSystem = makeCheckboxList(
+    CheckboxReferences.AutoBuyWeather = makeCheckboxList(
         catWeather,
         AutoBuyWeather.AllWeathers,
         nil,
@@ -2374,7 +2373,7 @@ if AutoBuyWeather then
         
         
         if on then
-            local selected = weatherCheckboxSystem.GetSelected()
+            local selected = CheckboxReferences.AutoBuyWeather.GetSelected()
             if #selected == 0 then
                 SendNotification("Auto Weather", "Pilih minimal 1 cuaca!", 3)
                 return
@@ -2427,8 +2426,9 @@ if RemoteBuyer then
     
     local SelectedRod = nil
     
-    makeDropdown(catRod, "Select Rod", "🎣", RodList, function(displayName)
+    DropdownReferences.RodSelector = makeDropdown(catRod, "Select Rod", "🎣", RodList, function(displayName)
         SelectedRod = RodMap[displayName]
+        SetConfigValue("Shop.SelectedRod", displayName)
         SendNotification("Rod Selected", "Rod: " .. SelectedRod, 3)
     end, "RodDropdown")
     
@@ -2462,8 +2462,9 @@ if RemoteBuyer then
     
     local SelectedBait = nil
     
-    makeDropdown(catBait, "Select Bait", "🪱", BaitList, function(displayName)
+    DropdownReferences.BaitSelector = makeDropdown(catBait, "Select Bait", "🪱", BaitList, function(displayName)
         SelectedBait = BaitMap[displayName]
+        SetConfigValue("Shop.SelectedBait", displayName)
         SendNotification("Bait Selected", "Bait: " .. SelectedBait, 3)
     end, "BaitDropdown")
     
@@ -3111,6 +3112,10 @@ local function ApplyConfigToGUI()
         {"HideStats", "Settings.HideStats.Enabled"},
         {"Sprint", "Movement.SprintEnabled"},
         {"InfiniteJump", "Movement.InfiniteJump"},
+        {"PingFPSMonitor", "Support.PingFPSMonitor"},
+        {"AutoBuyWeather", "Shop.AutoBuyWeather.Enabled"},
+        {"AutoTeleportEvent", "Teleport.AutoTeleportEvent"},
+        {"SkinAnimation", "Support.SkinAnimation.Enabled"},
     }
     
     local inputMappings = {
@@ -3124,10 +3129,26 @@ local function ApplyConfigToGUI()
         {"BlatantCompleteDelay", "BlatantTester.CompleteDelay"},
         {"BlatantCancelDelay", "BlatantTester.CancelDelay"},
         {"SprintSpeed", "Movement.SprintSpeed"},
+        {"BlatantV1CompleteDelay", "BlatantV1.CompleteDelay"},
+        {"BlatantV1CancelDelay", "BlatantV1.CancelDelay"},
+        {"UltraBlatantCompleteDelay", "UltraBlatant.CompleteDelay"},
+        {"UltraBlatantCancelDelay", "UltraBlatant.CancelDelay"},
+        {"FastAutoFishingDelay", "FastAutoPerfect.FishingDelay"},
+        {"FastAutoCancelDelay", "FastAutoPerfect.CancelDelay"},
+        {"FastAutoTimeoutDelay", "FastAutoPerfect.TimeoutDelay"},
     }
     
     local dropdownMappings = {
         {"InstantFishingMode", "InstantFishing.Mode"},
+        {"EventTeleport", "Teleport.LastEventSelected"},
+        {"RodSelector", "Shop.SelectedRod"},
+        {"BaitSelector", "Shop.SelectedBait"},
+    }
+
+    local checkboxMappings = {
+        {"AutoFavTiers", "AutoFavorite.EnabledTiers"},
+        {"AutoFavVariants", "AutoFavorite.EnabledVariants"},
+        {"AutoBuyWeather", "Shop.AutoBuyWeather.SelectedWeathers"},
     }
     
     -- Update Toggles
@@ -3161,6 +3182,24 @@ local function ApplyConfigToGUI()
                 DropdownReferences[refKey].SetValue(val)
             end
         end
+    end
+
+    -- Update Checkboxes
+    for _, mapping in ipairs(checkboxMappings) do
+        local refKey, configPath = mapping[1], mapping[2]
+        if CheckboxReferences[refKey] and CheckboxReferences[refKey].SelectSpecific then
+            local val = GetConfigValue(configPath, {})
+            if type(val) == "table" then
+                CheckboxReferences[refKey].SelectSpecific(val)
+            end
+        end
+    end
+
+    -- Special: Skin Animation Loading
+    local savedSkin = GetConfigValue("Support.SkinAnimation.Current", nil)
+    local SkinAnimation = GetModule("SkinAnimation")
+    if savedSkin and SkinAnimation then
+        SkinAnimation.SwitchSkin(savedSkin)
     end
     
     SendNotification("Config", "✓ All settings applied!", 2)
