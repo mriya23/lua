@@ -444,23 +444,25 @@ end
 -- COLOR PALETTE
 -- ============================================
 local colors = {
-    primary = Color3.fromRGB(255, 140, 0),
-    secondary = Color3.fromRGB(147, 112, 219),
-    accent = Color3.fromRGB(186, 85, 211),
+    primary = Color3.fromRGB(56, 189, 248), -- Sky Blue
+    secondary = Color3.fromRGB(30, 41, 59), -- Slate 800
+    
     success = Color3.fromRGB(34, 197, 94),
-    warning = Color3.fromRGB(251, 191, 36),
-    danger = Color3.fromRGB(239, 68, 68),
+    warning = Color3.fromRGB(245, 158, 11),
+    danger = Color3.fromRGB(239, 68, 68), -- Soft Red
     
-    bg1 = Color3.fromRGB(10, 10, 10),
-    bg2 = Color3.fromRGB(18, 18, 18),
-    bg3 = Color3.fromRGB(25, 25, 25),
-    bg4 = Color3.fromRGB(35, 35, 35),
+    bg1 = Color3.fromRGB(15, 23, 42), -- Darkest Navy (Win BG)
+    bg2 = Color3.fromRGB(30, 41, 59), -- Lighter Navy (Sections/Detail)
+    bg3 = Color3.fromRGB(51, 65, 85), -- Borders
+    bg4 = Color3.fromRGB(71, 85, 105), -- Hover Light
+    accent = Color3.fromRGB(14, 165, 233),
     
-    text = Color3.fromRGB(255, 255, 255),
-    textDim = Color3.fromRGB(180, 180, 180),
-    textDimmer = Color3.fromRGB(120, 120, 120),
+    text = Color3.fromRGB(241, 245, 249),
+    textDim = Color3.fromRGB(148, 163, 184),
+    textDimmer = Color3.fromRGB(100, 116, 139),
     
-    border = Color3.fromRGB(50, 50, 50),
+    border = Color3.fromRGB(51, 65, 85),
+    shadow = Color3.fromRGB(0, 0, 0)
 }
 
 -- ============================================
@@ -505,49 +507,63 @@ local function bringToFront()
 end
 
 -- Main Window
+-- Main Window (Navy Theme Structure)
 local win = new("Frame", {
     Parent = gui,
     Size = windowSize,
     Position = UDim2.new(0.5, -windowSize.X.Offset/2, 0.5, -windowSize.Y.Offset/2),
     BackgroundColor3 = colors.bg1,
-    BackgroundTransparency = 0.25,
+    BackgroundTransparency = 0.05,
     BorderSizePixel = 0,
     ClipsDescendants = false,
     ZIndex = 3
 })
-new("UICorner", {Parent = win, CornerRadius = UDim.new(0, 12)})
-new("UIStroke", {
-    Parent = win,
-    Color = colors.primary,
-    Thickness = 1,
-    Transparency = 0.9,
-    ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-})
+new("UICorner", {Parent = win, CornerRadius = UDim.new(0, 16)})
+new("UIStroke", {Parent = win, Color = colors.bg3, Thickness = 2, ApplyStrokeMode = Enum.ApplyStrokeMode.Border})
 
--- Sidebar
-local sidebar = new("Frame", {
+-- Header Container
+local scriptHeader = new("Frame", {
     Parent = win,
-    Size = UDim2.new(0, sidebarWidth, 1, -45),
-    Position = UDim2.new(0, 0, 0, 45),
-    BackgroundColor3 = colors.bg2,
-    BackgroundTransparency = 0.75,
+    Size = UDim2.new(1, 0, 0, 60), -- Taller header for v3 style
+    BackgroundTransparency = 1,
+    ZIndex = 5
+})
+-- (No UICorner needed for transparent container)
+
+-- Top Navigation Scroll (Replaces Sidebar)
+local navContainer = new("ScrollingFrame", {
+    Parent = win,
+    Size = UDim2.new(1, -40, 0, 45),
+    Position = UDim2.new(0, 20, 0, 60), -- Below Header
+    BackgroundTransparency = 1,
+    ScrollBarThickness = 0,
+    AutomaticCanvasSize = Enum.AutomaticSize.X,
+    CanvasSize = UDim2.new(0,0,0,0),
+    ClipsDescendants = true,
+    ZIndex = 5
+})
+new("UIListLayout", {
+    Parent = navContainer,
+    FillDirection = Enum.FillDirection.Horizontal,
+    Padding = UDim.new(0, 10),
+    SortOrder = Enum.SortOrder.LayoutOrder,
+    VerticalAlignment = Enum.VerticalAlignment.Center
+})
+-- Re-using variable name 'sidebar' to prevent nil errors in later code temporarily
+local sidebar = navContainer 
+
+-- Content Area (Full Width Below Nav)
+local contentBg = new("Frame", {
+    Parent = win,
+    Size = UDim2.new(1, -40, 1, -120),
+    Position = UDim2.new(0, 20, 0, 115),
+    BackgroundColor3 = colors.bg1,
+    BackgroundTransparency = 1,
     BorderSizePixel = 0,
     ClipsDescendants = true,
     ZIndex = 4
 })
-new("UICorner", {Parent = sidebar, CornerRadius = UDim.new(0, 12)})
 
--- Header
-local scriptHeader = new("Frame", {
-    Parent = win,
-    Size = UDim2.new(1, 0, 0, 45),
-    Position = UDim2.new(0, 0, 0, 0),
-    BackgroundColor3 = colors.bg2,
-    BackgroundTransparency = 0.75,
-    BorderSizePixel = 0,
-    ZIndex = 5
-})
-new("UICorner", {Parent = scriptHeader, CornerRadius = UDim.new(0, 12)})
 
 -- JackHubGUI v2.3.1 Performance Optimized - Part 2/8
 -- Navigation & UI Components (Baris 601-1200)
@@ -700,64 +716,8 @@ ConnectionManager:Add(btnCloseHeader.MouseButton1Click:Connect(function()
     end
 end))
 
--- Navigation Container
-local navContainer = new("ScrollingFrame", {
-    Parent = sidebar,
-    Size = UDim2.new(1, -8, 1, -12),
-    Position = UDim2.new(0, 4, 0, 6),
-    BackgroundTransparency = 1,
-    ScrollBarThickness = 2,
-    ScrollBarImageColor3 = colors.primary,
-    BorderSizePixel = 0,
-    CanvasSize = UDim2.new(0, 0, 0, 0),
-    AutomaticCanvasSize = Enum.AutomaticSize.Y,
-    ClipsDescendants = true,
-    ZIndex = 5
-})
-new("UIListLayout", {
-    Parent = navContainer,
-    Padding = UDim.new(0, 4),
-    SortOrder = Enum.SortOrder.LayoutOrder
-})
-
--- Content Area
-local contentBg = new("Frame", {
-    Parent = win,
-    Size = UDim2.new(1, -(sidebarWidth + 10), 1, -52),
-    Position = UDim2.new(0, sidebarWidth + 5, 0, 47),
-    BackgroundColor3 = colors.bg2,
-    BackgroundTransparency = 0.8,
-    BorderSizePixel = 0,
-    ClipsDescendants = true,
-    ZIndex = 4
-})
-new("UICorner", {Parent = contentBg, CornerRadius = UDim.new(0, 12)})
-
--- Top Bar
-local topBar = new("Frame", {
-    Parent = contentBg,
-    Size = UDim2.new(1, -8, 0, 32),
-    Position = UDim2.new(0, 4, 0, 4),
-    BackgroundColor3 = colors.bg3,
-    BackgroundTransparency = 0.8,
-    BorderSizePixel = 0,
-    ZIndex = 5
-})
-new("UICorner", {Parent = topBar, CornerRadius = UDim.new(0, 10)})
-
-local pageTitle = new("TextLabel", {
-    Parent = topBar,
-    Text = "Main Dashboard",
-    Size = UDim2.new(1, -20, 1, 0),
-    Position = UDim2.new(0, 12, 0, 0),
-    Font = Enum.Font.GothamBold,
-    TextSize = 11,
-    BackgroundTransparency = 1,
-    TextColor3 = colors.text,
-    TextTransparency = 0.2,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    ZIndex = 6
-})
+-- Legacy Layout Removed (Replaced by Top Nav Structure)
+-- Content Area and Top Bar are now defined in Main Layout section.
 
 -- Resize Handle
 local resizing = false
@@ -932,122 +892,113 @@ local settingsPage = createPage("Settings")
 local infoPage = createPage("Info")
 mainPage.Visible = true
 
--- Navigation Button (Optimized)
+-- Navigation Button (Pill Style)
 local function createNavButton(text, icon, page, order)
     local btn = new("TextButton", {
         Parent = navContainer,
-        Size = UDim2.new(1, 0, 0, 38),
-        BackgroundColor3 = page == currentPage and colors.bg3 or Color3.fromRGB(0, 0, 0),
-        BackgroundTransparency = page == currentPage and 0.7 or 1,
+        Size = UDim2.new(0, 0, 1, 0), -- Auto Width
+        AutomaticSize = Enum.AutomaticSize.X,
+        BackgroundColor3 = page == currentPage and colors.bg3 or colors.bg1,
+        BackgroundTransparency = page == currentPage and 0 or 1,
         BorderSizePixel = 0,
         Text = "",
         AutoButtonColor = false,
         LayoutOrder = order,
         ZIndex = 6
     })
-    new("UICorner", {Parent = btn, CornerRadius = UDim.new(0, 9)})
+    new("UICorner", {Parent = btn, CornerRadius = UDim.new(1, 0)}) -- Pill Shape
+    new("UIStroke", {Parent = btn, Color = colors.bg3, Thickness = 1, Transparency = 1})
+    new("UIPadding", {Parent = btn, PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16), PaddingTop = UDim.new(0, 6)})
     
-    local indicator = new("Frame", {
+    local content = new("Frame", {
         Parent = btn,
-        Size = UDim2.new(0, 3, 0, 20),
-        Position = UDim2.new(0, 0, 0.5, -10),
-        BackgroundColor3 = colors.primary,
-        BorderSizePixel = 0,
-        Visible = page == currentPage,
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
         ZIndex = 7
     })
-    new("UICorner", {Parent = indicator, CornerRadius = UDim.new(1, 0)})
+    new("UIListLayout", {
+        Parent = content,
+        FillDirection = Enum.FillDirection.Horizontal,
+        Padding = UDim.new(0, 8),
+        VerticalAlignment = Enum.VerticalAlignment.Center,
+        HorizontalAlignment = Enum.HorizontalAlignment.Center
+    })
     
     local iconLabel = new("TextLabel", {
-        Parent = btn,
+        Parent = content,
         Text = icon,
-        Size = UDim2.new(0, 30, 1, 0),
-        Position = UDim2.new(0, 10, 0, 0),
         BackgroundTransparency = 1,
-        Font = Enum.Font.GothamBold,
-        TextSize = 15,
+        Font = Enum.Font.GothamMedium,
+        TextSize = 16,
         TextColor3 = page == currentPage and colors.primary or colors.textDim,
-        TextTransparency = page == currentPage and 0 or 0.3,
+        AutomaticSize = Enum.AutomaticSize.XY,
+        LayoutOrder = 1,
         ZIndex = 7
     })
     
     local textLabel = new("TextLabel", {
-        Parent = btn,
+        Parent = content,
         Text = text,
-        Size = UDim2.new(1, -45, 1, 0),
-        Position = UDim2.new(0, 40, 0, 0),
         BackgroundTransparency = 1,
         Font = Enum.Font.GothamBold,
-        TextSize = 10,
+        TextSize = 12,
         TextColor3 = page == currentPage and colors.text or colors.textDim,
-        TextTransparency = page == currentPage and 0.1 or 0.4,
-        TextXAlignment = Enum.TextXAlignment.Left,
+        AutomaticSize = Enum.AutomaticSize.XY,
+        LayoutOrder = 2,
         ZIndex = 7
     })
     
+    -- Hover Animation
     ConnectionManager:Add(btn.MouseEnter:Connect(function()
         if page ~= currentPage then
-            local t1 = TweenService:Create(btn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.8})
-            local t2 = TweenService:Create(iconLabel, TweenInfo.new(0.3), {TextTransparency = 0, TextColor3 = colors.primary})
-            local t3 = TweenService:Create(textLabel, TweenInfo.new(0.3), {TextTransparency = 0.2})
-            ConnectionManager:AddTween(t1)
-            ConnectionManager:AddTween(t2)
-            ConnectionManager:AddTween(t3)
-            t1:Play()
-            t2:Play()
-            t3:Play()
+             TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0.8, BackgroundColor3 = colors.bg3}):Play()
+             TweenService:Create(textLabel, TweenInfo.new(0.2), {TextColor3 = colors.text}):Play()
         end
     end))
-    
     ConnectionManager:Add(btn.MouseLeave:Connect(function()
         if page ~= currentPage then
-            local t1 = TweenService:Create(btn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1})
-            local t2 = TweenService:Create(iconLabel, TweenInfo.new(0.3), {TextTransparency = 0.3, TextColor3 = colors.textDim})
-            local t3 = TweenService:Create(textLabel, TweenInfo.new(0.3), {TextTransparency = 0.4})
-            ConnectionManager:AddTween(t1)
-            ConnectionManager:AddTween(t2)
-            ConnectionManager:AddTween(t3)
-            t1:Play()
-            t2:Play()
-            t3:Play()
+             TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+             TweenService:Create(textLabel, TweenInfo.new(0.2), {TextColor3 = colors.textDim}):Play()
         end
     end))
+
+    navButtons[page] = {btn = btn, icon = iconLabel, label = textLabel}
     
-    navButtons[page] = {btn = btn, icon = iconLabel, text = textLabel, indicator = indicator}
+    ConnectionManager:Add(btn.MouseButton1Click:Connect(function()
+        switchPage(page)
+    end))
+    
     return btn
 end
 
--- Switch Page (Optimized)
+-- Switch Page (Optimized for Tabs)
 local function switchPage(pageName, pageTitle_text)
     if currentPage == pageName then return end
-    for _, page in pairs(pages) do page.Visible = false end
+    currentPage = pageName
+    
+    for _, page in pairs(pages) do 
+        page.Visible = (page == pages[pageName])
+    end
     
     for name, btnData in pairs(navButtons) do
         local isActive = name == pageName
-        local t1 = TweenService:Create(btnData.btn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-            BackgroundColor3 = isActive and colors.bg3 or Color3.fromRGB(0, 0, 0),
-            BackgroundTransparency = isActive and 0.7 or 1
-        })
-        btnData.indicator.Visible = isActive
-        local t2 = TweenService:Create(btnData.icon, TweenInfo.new(0.3), {
-            TextColor3 = isActive and colors.primary or colors.textDim,
-            TextTransparency = isActive and 0 or 0.3
-        })
-        local t3 = TweenService:Create(btnData.text, TweenInfo.new(0.3), {
-            TextColor3 = isActive and colors.text or colors.textDim,
-            TextTransparency = isActive and 0.1 or 0.4
-        })
-        ConnectionManager:AddTween(t1)
-        ConnectionManager:AddTween(t2)
-        ConnectionManager:AddTween(t3)
-        t1:Play()
-        t2:Play()
-        t3:Play()
+        
+        -- Animate Button Background
+        TweenService:Create(btnData.btn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
+            BackgroundColor3 = isActive and colors.bg3 or colors.bg1,
+            BackgroundTransparency = isActive and 0.5 or 1
+        }):Play()
+        
+        -- Animate Icon
+        TweenService:Create(btnData.icon, TweenInfo.new(0.3), {
+            TextColor3 = isActive and colors.primary or colors.textDim
+        }):Play()
+        
+        -- Animate Text
+        TweenService:Create(btnData.label, TweenInfo.new(0.3), {
+            TextColor3 = isActive and colors.text or colors.textDim
+        }):Play()
     end
-    
-    pages[pageName].Visible = true
-    pageTitle.Text = pageTitle_text
-    currentPage = pageName
 end
 
 -- Create Nav Buttons
