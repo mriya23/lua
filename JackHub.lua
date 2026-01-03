@@ -1636,7 +1636,6 @@ if ConfigSystem then
     ConfigSystem.ConfigValues = {}
     
     function ConfigSystem.Set(path, value)
-        -- print("[JackHub SET] " .. tostring(path) .. " = " .. tostring(value))
         local parts = {}
         for part in string.gmatch(path, "[^%.]+") do
             table.insert(parts, part)
@@ -1647,7 +1646,15 @@ if ConfigSystem then
             if not current[key] then current[key] = {} end
             current = current[key]
         end
-        current[parts[#parts]] = value
+        
+        -- Clone table to break reference
+        if type(value) == "table" then
+            local clone = {}
+            for k, v in pairs(value) do clone[k] = v end
+            current[parts[#parts]] = clone
+        else
+            current[parts[#parts]] = value
+        end
     end
     
     function ConfigSystem.Get(path)
@@ -2108,6 +2115,8 @@ if AutoFavorite then
     TrackedSpawn(function()
         task.wait(0.5)
         local tiers = GetConfigValue("AutoFavorite.EnabledTiers", {})
+        -- SendNotification("Debug", "AutoFav Tiers Loaded: " .. tostring(#tiers), 4)
+        
         if CheckboxReferences.AutoFavTiers then CheckboxReferences.AutoFavTiers.SelectSpecific(tiers) end
         
         -- Force Module Update (AutoFavorite)
