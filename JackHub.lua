@@ -3422,8 +3422,29 @@ ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
             error("ConfigSystem unavailable")
         end
         
+        -- Helper to sanitize data (Remove Instances/Functions/UserData)
+        local function Sanitize(tbl)
+            if type(tbl) ~= "table" then return tbl end
+            local clean = {}
+            for k, v in pairs(tbl) do
+                local t = typeof(v)
+                if t == "table" then
+                    clean[k] = Sanitize(v)
+                elseif t == "string" or t == "number" or t == "boolean" then
+                    clean[k] = v
+                end
+                -- Ignore unsupported types to prevent JSON crash
+            end
+            return clean
+        end
+        
+        local cleanData = Sanitize(configData)
         local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
-        writefile(filePath, game:GetService("HttpService"):JSONEncode(configData))
+        
+        local jsonSuccess, json = pcall(function() return game:GetService("HttpService"):JSONEncode(cleanData) end)
+        if not jsonSuccess then error("JSON Encode Fail: " .. tostring(json)) end
+        
+        writefile(filePath, json)
     end)
     
     if success then
