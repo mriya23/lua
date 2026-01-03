@@ -619,6 +619,13 @@ local isMinimized = false
 local originalSize = windowSize -- Store ONCE, never changes
 local isToggling = false -- Debounce
 local UserInputService = game:GetService("UserInputService")
+-- Clean up any existing floating buttons (prevent duplicates)
+for _, existingBtn in ipairs(gui:GetChildren()) do
+    if existingBtn.Name == "JackHubFloatingButton" then
+        existingBtn:Destroy()
+    end
+end
+
 -- Create Floating Restore Button (Hidden by default)
 local restoreBtn = new("ImageButton", {
     Name = "JackHubFloatingButton", 
