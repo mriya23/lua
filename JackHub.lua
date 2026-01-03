@@ -466,10 +466,30 @@ local colors = {
 -- ============================================
 -- GUI STRUCTURE
 -- ============================================
-local windowSize = UDim2.new(0, 420, 0, 280)
-local minWindowSize = Vector2.new(380, 250)
-local maxWindowSize = Vector2.new(550, 400)
-local sidebarWidth = 140
+-- Responsive Logic
+local viewport = workspace.CurrentCamera.ViewportSize
+local isSmallScreen = viewport.X < 800 or game:GetService("UserInputService").TouchEnabled
+
+local windowSize
+local sidebarWidth
+
+if isSmallScreen then
+    -- Mobile / Small Tablet Layout
+    local w = math.clamp(viewport.X * 0.75, 320, 500)
+    local h = math.clamp(viewport.Y * 0.65, 250, 350)
+    windowSize = UDim2.new(0, w, 0, h)
+    sidebarWidth = 45 -- Collapsed style sidebar for mobile? Or just smaller. 
+    -- If text labels act weird, 120 is safer. 
+    -- Let's stick to a safe 120px for mobile to ensure readability.
+    sidebarWidth = 120
+else
+    -- Desktop Layout
+    windowSize = UDim2.new(0, 650, 0, 400)
+    sidebarWidth = 150
+end
+
+local minWindowSize = Vector2.new(320, 220)
+local maxWindowSize = Vector2.new(800, 600)
 
 local gui = new("ScreenGui", {
     Name = GUI_IDENTIFIER,
