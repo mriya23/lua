@@ -625,7 +625,8 @@ local resizeHandle = new("TextButton", {
 
 -- Minimize Logic
 local isMinimized = false
-local savedSize = windowSize
+local originalSize = windowSize -- Store ONCE, never changes
+local isToggling = false -- Debounce
 local UserInputService = game:GetService("UserInputService")
 -- Create Floating Restore Button (Hidden by default)
 local restoreBtn = new("ImageButton", {
@@ -650,20 +651,22 @@ new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
 new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
 
 local function ToggleMinimize()
+    if isToggling then return end -- Debounce: prevent spam
+    isToggling = true
+    
     if win.Visible then
-        -- Minimize: Hide Window, Show Floating Button
-        savedSize = win.Size
+        -- Minimize: Hide Window
         win.Visible = false
-        restoreBtn.Visible = true
         isMinimized = true
     else
-        -- Restore: Show Window, Hide Floating Button
-        restoreBtn.Visible = false
+        -- Restore: Show Window with animation
         win.Visible = true
-        win.Size = UDim2.new(0, 0, 0, 0) -- Reset size for animation
-        TweenService:Create(win, TweenInfo.new(0.4, Enum.EasingStyle.Back), {Size = savedSize}):Play()
+        win.Size = UDim2.new(0, 0, 0, 0)
+        TweenService:Create(win, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Size = originalSize}):Play()
         isMinimized = false
     end
+    
+    task.delay(0.35, function() isToggling = false end) -- Allow next toggle after animation
 end
 
 ConnectionManager:Add(restoreBtn.MouseButton1Click:Connect(ToggleMinimize))
