@@ -3229,14 +3229,22 @@ local function RefreshConfigList()
             
             -- Delete button click
             ConnectionManager:Add(deleteBtn.MouseButton1Click:Connect(function()
+                local deleted = false
                 pcall(function()
                     local filePath = "JackHubGUI_Configs/" .. configName .. ".json"
                     if isfile(filePath) then
                         delfile(filePath)
-                        SendNotification("Config", "🗑️ Deleted: " .. configName, 3)
-                        RefreshConfigList()
+                        deleted = true
                     end
                 end)
+                
+                if deleted then
+                    SendNotification("Config", "🗑️ Deleted: " .. configName, 3)
+                    task.wait(0.2) -- Wait for file system sync
+                    RefreshConfigList()
+                else
+                    SendNotification("Config", "⚠ Failed to delete", 3)
+                end
             end))
         end
     end
