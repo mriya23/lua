@@ -1768,260 +1768,275 @@ end)
 -- ============================================
 
 -- Blatant Tester
-local catBlatantV2 = makeCategory(mainPage, "Blatant Tester", "🎯")
-
-local savedBlatantTesterCompleteDelay = GetConfigValue("BlatantTester.CompleteDelay", 0.5)
-local savedBlatantTesterCancelDelay = GetConfigValue("BlatantTester.CancelDelay", 0.1)
-
-TrackedSpawn(function()
-    task.wait(0.5)
-    local blatantv2fix = GetModule("blatantv2fix")
-    if blatantv2fix then
-        blatantv2fix.Settings.CompleteDelay = savedBlatantTesterCompleteDelay
-        blatantv2fix.Settings.CancelDelay = savedBlatantTesterCancelDelay
-    end
-end)
-
-ToggleReferences.BlatantTester = makeToggle(catBlatantV2, "Blatant Tester", function(on)
-    SetConfigValue("BlatantTester.Enabled", on)
+do
+    -- Blatant Tester
+    local catBlatantV2 = makeCategory(mainPage, "Blatant Tester", "🎯")
     
-    local blatantv2fix = GetModule("blatantv2fix")
-    if blatantv2fix then
-        if on then blatantv2fix.Start() else blatantv2fix.Stop() end
-    end
-end)
-
-InputReferences.BlatantCompleteDelay = makeInput(catBlatantV2, "Complete Delay", savedBlatantTesterCompleteDelay, function(v)
-    SetConfigValue("BlatantTester.CompleteDelay", v)
+    local savedBlatantTesterCompleteDelay = GetConfigValue("BlatantTester.CompleteDelay", 0.5)
+    local savedBlatantTesterCancelDelay = GetConfigValue("BlatantTester.CancelDelay", 0.1)
     
-    local blatantv2fix = GetModule("blatantv2fix")
-    if blatantv2fix then blatantv2fix.Settings.CompleteDelay = v end
-end)
-
-InputReferences.BlatantCancelDelay = makeInput(catBlatantV2, "Cancel Delay", savedBlatantTesterCancelDelay, function(v)
-    SetConfigValue("BlatantTester.CancelDelay", v)
+    TrackedSpawn(function()
+        task.wait(0.5)
+        local blatantv2fix = GetModule("blatantv2fix")
+        if blatantv2fix then
+            blatantv2fix.Settings.CompleteDelay = savedBlatantTesterCompleteDelay
+            blatantv2fix.Settings.CancelDelay = savedBlatantTesterCancelDelay
+        end
+    end)
     
-    local blatantv2fix = GetModule("blatantv2fix")
-    if blatantv2fix then blatantv2fix.Settings.CancelDelay = v end
-end)
+    ToggleReferences.BlatantTester = makeToggle(catBlatantV2, "Blatant Tester", function(on)
+        SetConfigValue("BlatantTester.Enabled", on)
+        
+        local blatantv2fix = GetModule("blatantv2fix")
+        if blatantv2fix then
+            if on then blatantv2fix.Start() else blatantv2fix.Stop() end
+        end
+    end)
+    
+    InputReferences.BlatantCompleteDelay = makeInput(catBlatantV2, "Complete Delay", savedBlatantTesterCompleteDelay, function(v)
+        SetConfigValue("BlatantTester.CompleteDelay", v)
+        
+        local blatantv2fix = GetModule("blatantv2fix")
+        if blatantv2fix then blatantv2fix.Settings.CompleteDelay = v end
+    end)
+    
+    InputReferences.BlatantCancelDelay = makeInput(catBlatantV2, "Cancel Delay", savedBlatantTesterCancelDelay, function(v)
+        SetConfigValue("BlatantTester.CancelDelay", v)
+        
+        local blatantv2fix = GetModule("blatantv2fix")
+        if blatantv2fix then blatantv2fix.Settings.CancelDelay = v end
+    end)
+end
 
 -- JackHubGUI v2.3.1 Performance Optimized - Part 4/8
 -- More Blatant Modes & Support Features (Baris 1801-2400)
 
 -- Blatant V1
-local catBlatantV1 = makeCategory(mainPage, "Blatant V1", "💀")
+do
+    -- Blatant V1
+    local catBlatantV1 = makeCategory(mainPage, "Blatant V1", "💀")
 
-local savedBlatantV1CompleteDelay = GetConfigValue("BlatantV1.CompleteDelay", 0.05)
-local savedBlatantV1CancelDelay = GetConfigValue("BlatantV1.CancelDelay", 0.1)
+    local savedBlatantV1CompleteDelay = GetConfigValue("BlatantV1.CompleteDelay", 0.05)
+    local savedBlatantV1CancelDelay = GetConfigValue("BlatantV1.CancelDelay", 0.1)
 
-TrackedSpawn(function()
-    task.wait(0.5)
-    local blatantv1 = GetModule("blatantv1")
-    if blatantv1 then
-        blatantv1.Settings.CompleteDelay = savedBlatantV1CompleteDelay
-        blatantv1.Settings.CancelDelay = savedBlatantV1CancelDelay
-    end
-end)
+    TrackedSpawn(function()
+        task.wait(0.5)
+        local blatantv1 = GetModule("blatantv1")
+        if blatantv1 then
+            blatantv1.Settings.CompleteDelay = savedBlatantV1CompleteDelay
+            blatantv1.Settings.CancelDelay = savedBlatantV1CancelDelay
+        end
+    end)
 
-ToggleReferences.BlatantV1 = makeToggle(catBlatantV1, "Blatant Mode", function(on)
-    SetConfigValue("BlatantV1.Enabled", on)
-    
-    local blatantv1 = GetModule("blatantv1")
-    if blatantv1 then
-        if on then blatantv1.Start() else blatantv1.Stop() end
-    end
-end)
+    ToggleReferences.BlatantV1 = makeToggle(catBlatantV1, "Blatant Mode", function(on)
+        SetConfigValue("BlatantV1.Enabled", on)
+        
+        local blatantv1 = GetModule("blatantv1")
+        if blatantv1 then
+            if on then blatantv1.Start() else blatantv1.Stop() end
+        end
+    end)
 
-InputReferences.BlatantV1CompleteDelay = makeInput(catBlatantV1, "Complete Delay", savedBlatantV1CompleteDelay, function(v)
-    SetConfigValue("BlatantV1.CompleteDelay", v)
-    
-    local blatantv1 = GetModule("blatantv1")
-    if blatantv1 then blatantv1.Settings.CompleteDelay = v end
-end)
+    InputReferences.BlatantV1CompleteDelay = makeInput(catBlatantV1, "Complete Delay", savedBlatantV1CompleteDelay, function(v)
+        SetConfigValue("BlatantV1.CompleteDelay", v)
+        
+        local blatantv1 = GetModule("blatantv1")
+        if blatantv1 then blatantv1.Settings.CompleteDelay = v end
+    end)
 
-InputReferences.BlatantV1CancelDelay = makeInput(catBlatantV1, "Cancel Delay", savedBlatantV1CancelDelay, function(v)
-    SetConfigValue("BlatantV1.CancelDelay", v)
-    
-    local blatantv1 = GetModule("blatantv1")
-    if blatantv1 then blatantv1.Settings.CancelDelay = v end
-end)
+    InputReferences.BlatantV1CancelDelay = makeInput(catBlatantV1, "Cancel Delay", savedBlatantV1CancelDelay, function(v)
+        SetConfigValue("BlatantV1.CancelDelay", v)
+        
+        local blatantv1 = GetModule("blatantv1")
+        if blatantv1 then blatantv1.Settings.CancelDelay = v end
+    end)
+end
 
 -- Ultra Blatant V2
-local catUltraBlatant = makeCategory(mainPage, "Blatant V2", "⚡")
+do
+    -- Ultra Blatant V2
+    local catUltraBlatant = makeCategory(mainPage, "Blatant V2", "⚡")
 
-local savedUltraBlatantCompleteDelay = GetConfigValue("UltraBlatant.CompleteDelay", 0.05)
-local savedUltraBlatantCancelDelay = GetConfigValue("UltraBlatant.CancelDelay", 0.1)
+    local savedUltraBlatantCompleteDelay = GetConfigValue("UltraBlatant.CompleteDelay", 0.05)
+    local savedUltraBlatantCancelDelay = GetConfigValue("UltraBlatant.CancelDelay", 0.1)
 
-TrackedSpawn(function()
-    task.wait(0.5)
-    local UltraBlatant = GetModule("UltraBlatant")
-    if UltraBlatant then
-        if UltraBlatant.Settings then
-            UltraBlatant.Settings.CompleteDelay = savedUltraBlatantCompleteDelay
-            UltraBlatant.Settings.CancelDelay = savedUltraBlatantCancelDelay
-        elseif UltraBlatant.UpdateSettings then
-            UltraBlatant.UpdateSettings(savedUltraBlatantCompleteDelay, savedUltraBlatantCancelDelay, nil)
+    TrackedSpawn(function()
+        task.wait(0.5)
+        local UltraBlatant = GetModule("UltraBlatant")
+        if UltraBlatant then
+            if UltraBlatant.Settings then
+                UltraBlatant.Settings.CompleteDelay = savedUltraBlatantCompleteDelay
+                UltraBlatant.Settings.CancelDelay = savedUltraBlatantCancelDelay
+            elseif UltraBlatant.UpdateSettings then
+                UltraBlatant.UpdateSettings(savedUltraBlatantCompleteDelay, savedUltraBlatantCancelDelay, nil)
+            end
         end
-    end
-end)
+    end)
 
-ToggleReferences.UltraBlatant = makeToggle(catUltraBlatant, "Blatant Mode", function(on)
-    SetConfigValue("UltraBlatant.Enabled", on)
-    
-    local UltraBlatant = GetModule("UltraBlatant")
-    if UltraBlatant then
-        if on then UltraBlatant.Start() else UltraBlatant.Stop() end
-    end
-end)
-
-InputReferences.UltraBlatantCompleteDelay = makeInput(catUltraBlatant, "Complete Delay", savedUltraBlatantCompleteDelay, function(v)
-    SetConfigValue("UltraBlatant.CompleteDelay", v)
-    
-    local UltraBlatant = GetModule("UltraBlatant")
-    if UltraBlatant then
-        if UltraBlatant.Settings then
-            UltraBlatant.Settings.CompleteDelay = v
-        elseif UltraBlatant.UpdateSettings then
-            UltraBlatant.UpdateSettings(v, nil, nil)
+    ToggleReferences.UltraBlatant = makeToggle(catUltraBlatant, "Blatant Mode", function(on)
+        SetConfigValue("UltraBlatant.Enabled", on)
+        
+        local UltraBlatant = GetModule("UltraBlatant")
+        if UltraBlatant then
+            if on then UltraBlatant.Start() else UltraBlatant.Stop() end
         end
-    end
-end)
+    end)
 
-InputReferences.UltraBlatantCancelDelay = makeInput(catUltraBlatant, "Cancel Delay", savedUltraBlatantCancelDelay, function(v)
-    SetConfigValue("UltraBlatant.CancelDelay", v)
-    
-    local UltraBlatant = GetModule("UltraBlatant")
-    if UltraBlatant then
-        if UltraBlatant.Settings then
-            UltraBlatant.Settings.CancelDelay = v
-        elseif UltraBlatant.UpdateSettings then
-            UltraBlatant.UpdateSettings(nil, v, nil)
+    InputReferences.UltraBlatantCompleteDelay = makeInput(catUltraBlatant, "Complete Delay", savedUltraBlatantCompleteDelay, function(v)
+        SetConfigValue("UltraBlatant.CompleteDelay", v)
+        
+        local UltraBlatant = GetModule("UltraBlatant")
+        if UltraBlatant then
+            if UltraBlatant.Settings then
+                UltraBlatant.Settings.CompleteDelay = v
+            elseif UltraBlatant.UpdateSettings then
+                UltraBlatant.UpdateSettings(v, nil, nil)
+            end
         end
-    end
-end)
+    end)
+
+    InputReferences.UltraBlatantCancelDelay = makeInput(catUltraBlatant, "Cancel Delay", savedUltraBlatantCancelDelay, function(v)
+        SetConfigValue("UltraBlatant.CancelDelay", v)
+        
+        local UltraBlatant = GetModule("UltraBlatant")
+        if UltraBlatant then
+            if UltraBlatant.Settings then
+                UltraBlatant.Settings.CancelDelay = v
+            elseif UltraBlatant.UpdateSettings then
+                UltraBlatant.UpdateSettings(nil, v, nil)
+            end
+        end
+    end)
+end
 
 -- Fast Auto Fishing Perfect
-local catBlatantV2Fast = makeCategory(mainPage, "Fast Auto Fishing Perfect", "🔥")
+do
+    -- Fast Auto Fishing Perfect
+    local catBlatantV2Fast = makeCategory(mainPage, "Fast Auto Fishing Perfect", "🔥")
 
-ToggleReferences.FastAutoPerfect = makeToggle(catBlatantV2Fast, "Fast Fishing Features", function(on)
-    SetConfigValue("FastAutoPerfect.Enabled", on)
-    
-    local blatantv2 = GetModule("blatantv2")
-    if blatantv2 then
-        if on then blatantv2.Start() else blatantv2.Stop() end
-    end
-end)
+    ToggleReferences.FastAutoPerfect = makeToggle(catBlatantV2Fast, "Fast Fishing Features", function(on)
+        SetConfigValue("FastAutoPerfect.Enabled", on)
+        
+        local blatantv2 = GetModule("blatantv2")
+        if blatantv2 then
+            if on then blatantv2.Start() else blatantv2.Stop() end
+        end
+    end)
 
-InputReferences.FastAutoFishingDelay = makeInput(catBlatantV2Fast, "Fishing Delay", GetConfigValue("FastAutoPerfect.FishingDelay", 0.05), function(v)
-    SetConfigValue("FastAutoPerfect.FishingDelay", v)
-    
-    local blatantv2 = GetModule("blatantv2")
-    if blatantv2 then blatantv2.Settings.FishingDelay = v end
-end)
+    InputReferences.FastAutoFishingDelay = makeInput(catBlatantV2Fast, "Fishing Delay", GetConfigValue("FastAutoPerfect.FishingDelay", 0.05), function(v)
+        SetConfigValue("FastAutoPerfect.FishingDelay", v)
+        
+        local blatantv2 = GetModule("blatantv2")
+        if blatantv2 then blatantv2.Settings.FishingDelay = v end
+    end)
 
-InputReferences.FastAutoCancelDelay = makeInput(catBlatantV2Fast, "Cancel Delay", GetConfigValue("FastAutoPerfect.CancelDelay", 0.01), function(v)
-    SetConfigValue("FastAutoPerfect.CancelDelay", v)
-    
-    local blatantv2 = GetModule("blatantv2")
-    if blatantv2 then blatantv2.Settings.CancelDelay = v end
-end)
+    InputReferences.FastAutoCancelDelay = makeInput(catBlatantV2Fast, "Cancel Delay", GetConfigValue("FastAutoPerfect.CancelDelay", 0.01), function(v)
+        SetConfigValue("FastAutoPerfect.CancelDelay", v)
+        
+        local blatantv2 = GetModule("blatantv2")
+        if blatantv2 then blatantv2.Settings.CancelDelay = v end
+    end)
 
-InputReferences.FastAutoTimeoutDelay = makeInput(catBlatantV2Fast, "Timeout Delay", GetConfigValue("FastAutoPerfect.TimeoutDelay", 0.8), function(v)
-    SetConfigValue("FastAutoPerfect.TimeoutDelay", v)
-    
-    local blatantv2 = GetModule("blatantv2")
-    if blatantv2 then blatantv2.Settings.TimeoutDelay = v end
-end)
+    InputReferences.FastAutoTimeoutDelay = makeInput(catBlatantV2Fast, "Timeout Delay", GetConfigValue("FastAutoPerfect.TimeoutDelay", 0.8), function(v)
+        SetConfigValue("FastAutoPerfect.TimeoutDelay", v)
+        
+        local blatantv2 = GetModule("blatantv2")
+        if blatantv2 then blatantv2.Settings.TimeoutDelay = v end
+    end)
+end
 
 -- ============================================
 -- SUPPORT FEATURES
 -- ============================================
-local catSupport = makeCategory(mainPage, "Support Features", "🛠️")
+do
+    -- Support Features
+    local catSupport = makeCategory(mainPage, "Support Features", "🛠️")
 
-ToggleReferences.NoFishingAnimation = makeToggle(catSupport, "No Fishing Animation", function(on)
-    SetConfigValue("Support.NoFishingAnimation", on)
-    
-    local NoFishingAnimation = GetModule("NoFishingAnimation")
-    if NoFishingAnimation then
-        if on then NoFishingAnimation.StartWithDelay() else NoFishingAnimation.Stop() end
-    end
-end)
-
-ToggleReferences.PingFPSMonitor = makeToggle(catSupport, "Ping & FPS Monitor", function(on)
-    SetConfigValue("Support.PingFPSMonitor", on)
-    
-    local PingFPSMonitor = GetModule("PingFPSMonitor")
-    if PingFPSMonitor then
-        if on then 
-            PingFPSMonitor:Show()
-        else 
-            PingFPSMonitor:Hide()
+    ToggleReferences.NoFishingAnimation = makeToggle(catSupport, "No Fishing Animation", function(on)
+        SetConfigValue("Support.NoFishingAnimation", on)
+        
+        local NoFishingAnimation = GetModule("NoFishingAnimation")
+        if NoFishingAnimation then
+            if on then NoFishingAnimation.StartWithDelay() else NoFishingAnimation.Stop() end
         end
-    end
-end)
+    end)
 
-ToggleReferences.LockPosition = makeToggle(catSupport, "Lock Position", function(on)
-    SetConfigValue("Support.LockPosition", on)
-    
-    local LockPosition = GetModule("LockPosition")
-    if LockPosition then
-        if on then LockPosition.Start() else LockPosition.Stop() end
-    end
-end)
+    ToggleReferences.PingFPSMonitor = makeToggle(catSupport, "Ping & FPS Monitor", function(on)
+        SetConfigValue("Support.PingFPSMonitor", on)
+        
+        local PingFPSMonitor = GetModule("PingFPSMonitor")
+        if PingFPSMonitor then
+            if on then 
+                PingFPSMonitor:Show()
+            else 
+                PingFPSMonitor:Hide()
+            end
+        end
+    end)
 
-ToggleReferences.AutoEquipRod = makeToggle(catSupport, "Auto Equip Rod", function(on)
-    SetConfigValue("Support.AutoEquipRod", on)
-    
-    local AutoEquipRod = GetModule("AutoEquipRod")
-    if AutoEquipRod then
-        if on then AutoEquipRod.Start() else AutoEquipRod.Stop() end
-    end
-end)
+    ToggleReferences.LockPosition = makeToggle(catSupport, "Lock Position", function(on)
+        SetConfigValue("Support.LockPosition", on)
+        
+        local LockPosition = GetModule("LockPosition")
+        if LockPosition then
+            if on then LockPosition.Start() else LockPosition.Stop() end
+        end
+    end)
 
-ToggleReferences.DisableCutscenes = makeToggle(catSupport, "Disable Cutscenes", function(on)
-    SetConfigValue("Support.DisableCutscenes", on)
-    
-    local DisableCutscenes = GetModule("DisableCutscenes")
-    if DisableCutscenes then
-        if on then DisableCutscenes.Start() else DisableCutscenes.Stop() end
-    end
-end)
+    ToggleReferences.AutoEquipRod = makeToggle(catSupport, "Auto Equip Rod", function(on)
+        SetConfigValue("Support.AutoEquipRod", on)
+        
+        local AutoEquipRod = GetModule("AutoEquipRod")
+        if AutoEquipRod then
+            if on then AutoEquipRod.Start() else AutoEquipRod.Stop() end
+        end
+    end)
 
-ToggleReferences.DisableObtainedNotif = makeToggle(catSupport, "Disable Obtained Fish Notification", function(on)
-    SetConfigValue("Support.DisableObtainedNotif", on)
-    
-    local DisableExtras = GetModule("DisableExtras")
-    if DisableExtras then
-        if on then DisableExtras.StartSmallNotification() else DisableExtras.StopSmallNotification() end
-    end
-end)
+    ToggleReferences.DisableCutscenes = makeToggle(catSupport, "Disable Cutscenes", function(on)
+        SetConfigValue("Support.DisableCutscenes", on)
+        
+        local DisableCutscenes = GetModule("DisableCutscenes")
+        if DisableCutscenes then
+            if on then DisableCutscenes.Start() else DisableCutscenes.Stop() end
+        end
+    end)
 
-ToggleReferences.DisableSkinEffect = makeToggle(catSupport, "Disable Skin Effect", function(on)
-    SetConfigValue("Support.DisableSkinEffect", on)
-    
-    local DisableExtras = GetModule("DisableExtras")
-    if DisableExtras then
-        if on then DisableExtras.StartSkinEffect() else DisableExtras.StopSkinEffect() end
-    end
-end)
+    ToggleReferences.DisableObtainedNotif = makeToggle(catSupport, "Disable Obtained Fish Notification", function(on)
+        SetConfigValue("Support.DisableObtainedNotif", on)
+        
+        local DisableExtras = GetModule("DisableExtras")
+        if DisableExtras then
+            if on then DisableExtras.StartSmallNotification() else DisableExtras.StopSmallNotification() end
+        end
+    end)
 
-ToggleReferences.WalkOnWater = makeToggle(catSupport, "Walk On Water", function(on)
-    SetConfigValue("Support.WalkOnWater", on)
-    
-    local WalkOnWater = GetModule("WalkOnWater")
-    if WalkOnWater then
-        if on then WalkOnWater.Start() else WalkOnWater.Stop() end
-    end
-end)
+    ToggleReferences.DisableSkinEffect = makeToggle(catSupport, "Disable Skin Effect", function(on)
+        SetConfigValue("Support.DisableSkinEffect", on)
+        
+        local DisableExtras = GetModule("DisableExtras")
+        if DisableExtras then
+            if on then DisableExtras.StartSkinEffect() else DisableExtras.StopSkinEffect() end
+        end
+    end)
 
-ToggleReferences.GoodPerfectionStable = makeToggle(catSupport, "Good/Perfection Stable Mode", function(on)
-    SetConfigValue("Support.GoodPerfectionStable", on)
-    
-    local GoodPerfectionStable = GetModule("GoodPerfectionStable")
-    if GoodPerfectionStable then
-        if on then GoodPerfectionStable.Start() else GoodPerfectionStable.Stop() end
-    end
-end)
+    ToggleReferences.WalkOnWater = makeToggle(catSupport, "Walk On Water", function(on)
+        SetConfigValue("Support.WalkOnWater", on)
+        
+        local WalkOnWater = GetModule("WalkOnWater")
+        if WalkOnWater then
+            if on then WalkOnWater.Start() else WalkOnWater.Stop() end
+        end
+    end)
+
+    ToggleReferences.GoodPerfectionStable = makeToggle(catSupport, "Good/Perfection Stable Mode", function(on)
+        SetConfigValue("Support.GoodPerfectionStable", on)
+        
+        local GoodPerfectionStable = GetModule("GoodPerfectionStable")
+        if GoodPerfectionStable then
+            if on then GoodPerfectionStable.Start() else GoodPerfectionStable.Stop() end
+        end
+    end)
+end
 
 -- ============================================
 -- AUTO FAVORITE (MINIMAL)
@@ -2078,82 +2093,85 @@ makeButton(catAutoTotem, "Auto Totem 3X", function()
 end)
 
 -- Skin Animation
-local catSkin = makeCategory(mainPage, "Skin Animation", "✨")
+do
+    -- Skin Animation
+    local catSkin = makeCategory(mainPage, "Skin Animation", "✨")
 
-makeButton(catSkin, "⚔️ Eclipse Katana", function()
-    local SkinAnimation = GetModule("SkinAnimation")
-    local Notify = GetModule("Notify")
-    if SkinAnimation then
-        local success = SkinAnimation.SwitchSkin("Eclipse")
-        if success then
-            SetConfigValue("Support.SkinAnimation.Current", "Eclipse")
-            
-            if Notify then Notify.Send("Skin Animation", "⚔️ Eclipse Katana diaktifkan!", 4) end
-            if not SkinAnimation.IsEnabled() then SkinAnimation.Enable() end
-        elseif Notify then
-            Notify.Send("Skin Animation", "⚠ Gagal mengganti skin!", 3)
+    makeButton(catSkin, "⚔️ Eclipse Katana", function()
+        local SkinAnimation = GetModule("SkinAnimation")
+        local Notify = GetModule("Notify")
+        if SkinAnimation then
+            local success = SkinAnimation.SwitchSkin("Eclipse")
+            if success then
+                SetConfigValue("Support.SkinAnimation.Current", "Eclipse")
+                
+                if Notify then Notify.Send("Skin Animation", "⚔️ Eclipse Katana diaktifkan!", 4) end
+                if not SkinAnimation.IsEnabled() then SkinAnimation.Enable() end
+            elseif Notify then
+                Notify.Send("Skin Animation", "⚠ Gagal mengganti skin!", 3)
+            end
         end
-    end
-end)
+    end)
 
-makeButton(catSkin, "🔱 Holy Trident", function()
-    local SkinAnimation = GetModule("SkinAnimation")
-    local Notify = GetModule("Notify")
-    if SkinAnimation then
-        local success = SkinAnimation.SwitchSkin("HolyTrident")
-        if success then
-            SetConfigValue("Support.SkinAnimation.Current", "HolyTrident")
-            
-            if Notify then Notify.Send("Skin Animation", "🔱 Holy Trident diaktifkan!", 4) end
-            if not SkinAnimation.IsEnabled() then SkinAnimation.Enable() end
-        elseif Notify then
-            Notify.Send("Skin Animation", "⚠ Gagal mengganti skin!", 3)
+    makeButton(catSkin, "🔱 Holy Trident", function()
+        local SkinAnimation = GetModule("SkinAnimation")
+        local Notify = GetModule("Notify")
+        if SkinAnimation then
+            local success = SkinAnimation.SwitchSkin("HolyTrident")
+            if success then
+                SetConfigValue("Support.SkinAnimation.Current", "HolyTrident")
+                
+                if Notify then Notify.Send("Skin Animation", "🔱 Holy Trident diaktifkan!", 4) end
+                if not SkinAnimation.IsEnabled() then SkinAnimation.Enable() end
+            elseif Notify then
+                Notify.Send("Skin Animation", "⚠ Gagal mengganti skin!", 3)
+            end
         end
-    end
-end)
+    end)
 
-makeButton(catSkin, "💀 Soul Scythe", function()
-    local SkinAnimation = GetModule("SkinAnimation")
-    local Notify = GetModule("Notify")
-    if SkinAnimation then
-        local success = SkinAnimation.SwitchSkin("SoulScythe")
-        if success then
-            SetConfigValue("Support.SkinAnimation.Current", "SoulScythe")
-            
-            if Notify then Notify.Send("Skin Animation", "💀 Soul Scythe diaktifkan!", 4) end
-            if not SkinAnimation.IsEnabled() then SkinAnimation.Enable() end
-        elseif Notify then
-            Notify.Send("Skin Animation", "⚠ Gagal mengganti skin!", 3)
+    makeButton(catSkin, "💀 Soul Scythe", function()
+        local SkinAnimation = GetModule("SkinAnimation")
+        local Notify = GetModule("Notify")
+        if SkinAnimation then
+            local success = SkinAnimation.SwitchSkin("SoulScythe")
+            if success then
+                SetConfigValue("Support.SkinAnimation.Current", "SoulScythe")
+                
+                if Notify then Notify.Send("Skin Animation", "💀 Soul Scythe diaktifkan!", 4) end
+                if not SkinAnimation.IsEnabled() then SkinAnimation.Enable() end
+            elseif Notify then
+                Notify.Send("Skin Animation", "⚠ Gagal mengganti skin!", 3)
+            end
         end
-    end
-end)
+    end)
 
-ToggleReferences.SkinAnimation = makeToggle(catSkin, "Enable Skin Animation", function(on)
-    SetConfigValue("Support.SkinAnimation.Enabled", on)
-    
-    local SkinAnimation = GetModule("SkinAnimation")
-    local Notify = GetModule("Notify")
-    if SkinAnimation then
-        if on then
-            local success = SkinAnimation.Enable()
-            if Notify then
-                if success then
-                    local currentSkin = SkinAnimation.GetCurrentSkin()
-                    local icon = currentSkin == "Eclipse" and "⚔️" or (currentSkin == "HolyTrident" and "🔱" or "💀")
-                    Notify.Send("Skin Animation", "✓ " .. icon .. " " .. currentSkin .. " aktif!", 4)
-                else
-                    Notify.Send("Skin Animation", "⚠ Sudah aktif!", 3)
+    ToggleReferences.SkinAnimation = makeToggle(catSkin, "Enable Skin Animation", function(on)
+        SetConfigValue("Support.SkinAnimation.Enabled", on)
+        
+        local SkinAnimation = GetModule("SkinAnimation")
+        local Notify = GetModule("Notify")
+        if SkinAnimation then
+            if on then
+                local success = SkinAnimation.Enable()
+                if Notify then
+                    if success then
+                        local currentSkin = SkinAnimation.GetCurrentSkin()
+                        local icon = currentSkin == "Eclipse" and "⚔️" or (currentSkin == "HolyTrident" and "🔱" or "💀")
+                        Notify.Send("Skin Animation", "✓ " .. icon .. " " .. currentSkin .. " aktif!", 4)
+                    else
+                        Notify.Send("Skin Animation", "⚠ Sudah aktif!", 3)
+                    end
+                end
+            else
+                local success = SkinAnimation.Disable()
+                if Notify then
+                    if success then Notify.Send("Skin Animation", "✓ Skin Animation dimatikan!", 4)
+                    else Notify.Send("Skin Animation", "⚠ Sudah nonaktif!", 3) end
                 end
             end
-        else
-            local success = SkinAnimation.Disable()
-            if Notify then
-                if success then Notify.Send("Skin Animation", "✓ Skin Animation dimatikan!", 4)
-                else Notify.Send("Skin Animation", "⚠ Sudah nonaktif!", 3) end
-            end
         end
-    end
-end)
+    end)
+end
 
 -- ============================================
 -- TELEPORT PAGE
