@@ -3605,13 +3605,16 @@ ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
             return clean
         end
         
-        -- DEBUG: Show what's being saved
+        -- DEBUG: Show what's being saved (with names)
         if configData.AutoFavorite and configData.AutoFavorite.EnabledTiers then
-            local tierCount = 0
-            for _ in pairs(configData.AutoFavorite.EnabledTiers) do tierCount = tierCount + 1 end
-            SendNotification("Debug", "DebugSave: " .. tostring(tierCount) .. " Tiers in config", 5)
+            local tierList = {}
+            for k, v in pairs(configData.AutoFavorite.EnabledTiers) do 
+                table.insert(tierList, tostring(v))
+            end
+            local tierNames = table.concat(tierList, ", ")
+            SendNotification("Debug", "DebugSave: [" .. tierNames .. "]", 6)
         else
-            SendNotification("Debug", "DebugSave: 0 Tiers in config", 5)
+            SendNotification("Debug", "DebugSave: EMPTY (No tiers in ConfigSystem)", 6)
         end
         
         local cleanData = Sanitize(configData)
