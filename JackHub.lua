@@ -1798,6 +1798,7 @@ InputReferences.CancelDelay = makeInput(catAutoFishing, "Cancel Delay", savedCan
     
     local instant = GetModule("instant")
     local instant2 = GetModule("instant2")
+    if instant then instant.Settings.CancelDelay = v end
     if instant2 then instant2.Settings.CancelDelay = v end
 end)
 end
