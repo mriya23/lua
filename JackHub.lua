@@ -1631,8 +1631,45 @@ end
 -- ============================================
 local ConfigSystem = loadstring(game:HttpGet("https://raw.githubusercontent.com/mriya23/Fish-It/main/SecurityLoader.lua"))()
 
+-- Inject Local Config Management (Fixes Persistence)
+if ConfigSystem then
+    ConfigSystem.ConfigValues = {}
+    
+    function ConfigSystem.Set(path, value)
+        local parts = {}
+        for part in string.gmatch(path, "[^%.]+") do
+            table.insert(parts, part)
+        end
+        local current = ConfigSystem.ConfigValues
+        for i = 1, #parts - 1 do
+            local key = parts[i]
+            if not current[key] then current[key] = {} end
+            current = current[key]
+        end
+        current[parts[#parts]] = value
+    end
+    
+    function ConfigSystem.Get(path)
+        local parts = {}
+        for part in string.gmatch(path, "[^%.]+") do
+            table.insert(parts, part)
+        end
+        local current = ConfigSystem.ConfigValues
+        for i = 1, #parts - 1 do
+            local key = parts[i]
+            if not current[key] then return nil end
+            current = current[key]
+        end
+        return current[parts[#parts]]
+    end
+    
+    function ConfigSystem.GetConfig()
+        return ConfigSystem.ConfigValues
+    end
+end
+
 local function GetConfigValue(path, default)
-    if ConfigSystem then
+    if ConfigSystem and ConfigSystem.Get then
         local success, value = pcall(function() return ConfigSystem.Get(path) end)
         if success and value ~= nil then return value end
     end
@@ -1640,12 +1677,12 @@ local function GetConfigValue(path, default)
 end
 
 local function SetConfigValue(path, value)
-    if ConfigSystem then pcall(function() ConfigSystem.Set(path, value) end) end
+    if ConfigSystem and ConfigSystem.Set then
+        pcall(function() ConfigSystem.Set(path, value) end)
+    end
 end
 
-local function SaveCurrentConfig()
-    if ConfigSystem then pcall(function() ConfigSystem.Save() end) end
-end
+-- Removed SaveCurrentConfig (redundant)
 
 -- ============================================
 -- TOGGLE REFERENCES
