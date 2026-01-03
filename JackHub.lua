@@ -3247,7 +3247,14 @@ local function RefreshConfigList()
                 end)
                 
                 if loaded then
-                    SendNotification("Config", "✓ Loaded: " .. configName .. "\nRe-execute script to apply!", 5)
+                    SendNotification("Config", "✓ Loaded: " .. configName .. "\nReloading GUI...", 2)
+                    
+                    -- Auto re-execute script after short delay
+                    task.delay(1.5, function()
+                        pcall(function()
+                            loadstring(game:HttpGet("https://raw.githubusercontent.com/mriya23/Fish-It/main/JackHub.lua?v=" .. tostring(os.time())))()
+                        end)
+                    end)
                 else
                     SendNotification("Config", "⚠ Failed to load config", 3)
                 end
