@@ -622,16 +622,21 @@ local resizeHandle = new("TextButton", {
 local isMinimized = false
 local savedSize = windowSize
 local UserInputService = game:GetService("UserInputService")
-
-local restoreBtn = new("ImageButton", {
-    Parent = gui,
-    Size = UDim2.new(0, 48, 0, 48),
-    Position = UDim2.new(0, 30, 0.5, -24),
+-- Create Floating Restore Button (Hidden by default)
+local restoreBtn = new("TextButton", {
+    Parent = gui, -- Parent to ScreenGui directly so it floats freely
+    Size = UDim2.new(0, 50, 0, 50),
+    Position = UDim2.new(0, 30, 0.5, -25), -- Default position Left
     BackgroundColor3 = colors.bg2,
     BackgroundTransparency = 0.2,
-    Image = game:GetService("Players"):GetUserThumbnailAsync(localPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150),
+    BorderSizePixel = 0,
+    Text = "JH",
+    Font = Enum.Font.GothamBlack,
+    TextSize = 20,
+    TextColor3 = colors.primary,
     Visible = false,
-    ZIndex = 200
+    AutoButtonColor = false,
+    ZIndex = 200 -- High ZIndex to be on top
 })
 new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
 new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
