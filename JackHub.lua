@@ -1090,6 +1090,7 @@ local function makeInput(parent, label, defaultValue, callback)
         if value then pcall(callback, value) else inputBox.Text = tostring(defaultValue) end
     end))
     
+    inputBox.SetValue = function(val) inputBox.Text = tostring(val); pcall(callback, val) end
     return inputBox
 end
 
@@ -1311,6 +1312,7 @@ local function makeDropdown(parent, title, icon, items, onSelect, uniqueId, defa
         end)
     end
     
+    dropdownFrame.SetValue = function(val) setSelectedItem(val, true) end -- Exposed for config loading
     return dropdownFrame
 end
 
@@ -1642,6 +1644,8 @@ end
 -- TOGGLE REFERENCES
 -- ============================================
 local ToggleReferences = {}
+local InputReferences = {}
+local DropdownReferences = {}
 
 -- ============================================
 -- AUTO FISHING
@@ -1674,7 +1678,7 @@ TrackedSpawn(function()
     end
 end)
 
-makeDropdown(catAutoFishing, "Instant Fishing Mode", "⚡", {"Fast", "Perfect"}, function(mode)
+DropdownReferences.InstantFishingMode = makeDropdown(catAutoFishing, "Instant Fishing Mode", "⚡", {"Fast", "Perfect"}, function(mode)
     currentInstantMode = mode
     SetConfigValue("InstantFishing.Mode", mode)
     
@@ -1729,12 +1733,12 @@ TrackedSpawn(function()
         if currentInstantMode == "Fast" and instant then instant.Start()
         elseif currentInstantMode == "Perfect" and instant2 then instant2.Start() end
     end
+    end
 end)
 
-makeInput(catAutoFishing, "Fishing Delay", savedFishingDelay, function(v)
+InputReferences.FishingDelay = makeInput(catAutoFishing, "Fishing Delay", savedFishingDelay, function(v)
     fishingDelayValue = v
     SetConfigValue("InstantFishing.FishingDelay", v)
-    
     
     local instant = GetModule("instant")
     local instant2 = GetModule("instant2")
@@ -1742,15 +1746,15 @@ makeInput(catAutoFishing, "Fishing Delay", savedFishingDelay, function(v)
     if instant2 then instant2.Settings.MaxWaitTime = v end
 end)
 
-makeInput(catAutoFishing, "Cancel Delay", savedCancelDelay, function(v)
+InputReferences.CancelDelay = makeInput(catAutoFishing, "Cancel Delay", savedCancelDelay, function(v)
     cancelDelayValue = v
     SetConfigValue("InstantFishing.CancelDelay", v)
-    
     
     local instant = GetModule("instant")
     local instant2 = GetModule("instant2")
     if instant then instant.Settings.CancelDelay = v end
     if instant2 then instant2.Settings.CancelDelay = v end
+end)
 end)
 
 -- ============================================
@@ -2310,7 +2314,7 @@ local catTimer = makeCategory(shopPage, "Auto Sell Timer", "⏰")
 local AutoSellTimer = GetModule("AutoSellTimer")
 
 if AutoSellTimer then
-    makeInput(catTimer, "Sell Interval (seconds)", GetConfigValue("Shop.AutoSellTimer.Interval", 5), function(value)
+    InputReferences.AutoSellInterval = makeInput(catTimer, "Sell Interval (seconds)", GetConfigValue("Shop.AutoSellTimer.Interval", 5), function(value)
         SetConfigValue("Shop.AutoSellTimer.Interval", value)
         
         if AutoSellTimer then pcall(function() AutoSellTimer.SetInterval(value) end) end
@@ -2563,6 +2567,16 @@ local webhookTextBox = new("TextBox", {
     ZIndex = 9
 })
 
+-- Allow external update
+webhookTextBox.SetValue = function(val)
+    webhookTextBox.Text = tostring(val)
+    currentWebhookURL = tostring(val)
+    if WebhookModule and currentWebhookURL ~= "" then
+        pcall(function() WebhookModule:SetWebhookURL(currentWebhookURL) end)
+    end
+end
+InputReferences.WebhookURL = webhookTextBox
+
 if isWebhookSupported then
     ConnectionManager:Add(webhookTextBox.FocusLost:Connect(function()
         currentWebhookURL = webhookTextBox.Text
@@ -2623,6 +2637,16 @@ local discordIDTextBox = new("TextBox", {
     TextEditable = isWebhookSupported,
     ZIndex = 9
 })
+
+-- Allow external update
+discordIDTextBox.SetValue = function(val)
+    discordIDTextBox.Text = tostring(val)
+    currentDiscordID = tostring(val)
+    if WebhookModule then
+        pcall(function() WebhookModule:SetDiscordUserID(currentDiscordID) end)
+    end
+end
+InputReferences.DiscordID = discordIDTextBox
 
 if isWebhookSupported then
     ConnectionManager:Add(discordIDTextBox.FocusLost:Connect(function()
@@ -2782,13 +2806,13 @@ ToggleReferences.Freecam = makeToggle(catFreecam, "Enable Freecam", function(on)
     end
 end)
 
-makeInput(catFreecam, "Movement Speed", GetConfigValue("CameraView.Freecam.Speed", 50), function(value)
+InputReferences.FreecamSpeed = makeInput(catFreecam, "Movement Speed", GetConfigValue("CameraView.Freecam.Speed", 50), function(value)
     SetConfigValue("CameraView.Freecam.Speed", value)
     
     if FreecamModule then FreecamModule.SetSpeed(value) end
 end)
 
-makeInput(catFreecam, "Mouse Sensitivity", GetConfigValue("CameraView.Freecam.Sensitivity", 0.3), function(value)
+InputReferences.FreecamSensitivity = makeInput(catFreecam, "Mouse Sensitivity", GetConfigValue("CameraView.Freecam.Sensitivity", 0.3), function(value)
     SetConfigValue("CameraView.Freecam.Sensitivity", value)
     
     if FreecamModule then FreecamModule.SetSensitivity(value) end
@@ -3045,6 +3069,86 @@ makeButton(catServer, "Rejoin Server", function()
     SendNotification("Rejoin", "Teleporting to new server...", 3)
 end)
 
+-- ============================================
+-- APPLY CONFIG TO GUI FUNCTION
+-- ============================================
+local function ApplyConfigToGUI()
+    -- Apply toggle states from ConfigSystem to GUI
+    local toggleMappings = {
+        {"InstantFishing", "InstantFishing.Enabled"},
+        {"BlatantTester", "BlatantTester.Enabled"},
+        {"BlatantV1", "BlatantV1.Enabled"},
+        {"UltraBlatant", "UltraBlatant.Enabled"},
+        {"FastAutoPerfect", "FastAutoPerfect.Enabled"},
+        {"NoFishingAnimation", "Support.NoFishingAnimation"},
+        {"LockPosition", "Support.LockPosition"},
+        {"AutoEquipRod", "Support.AutoEquipRod"},
+        {"DisableCutscenes", "Support.DisableCutscenes"},
+        {"DisableObtainedNotif", "Support.DisableObtainedNotif"},
+        {"DisableSkinEffect", "Support.DisableSkinEffect"},
+        {"WalkOnWater", "Support.WalkOnWater"},
+        {"GoodPerfection", "Support.GoodPerfectionStable"},
+        {"AutoSellTimer", "Shop.AutoSellTimer.Enabled"},
+        {"AutoBuyWeather", "Shop.AutoBuyWeather.Enabled"},
+        {"Webhook", "Webhook.Enabled"},
+        {"UnlimitedZoom", "CameraView.UnlimitedZoom"},
+        {"Freecam", "CameraView.Freecam.Enabled"},
+        {"AntiAFK", "Settings.AntiAFK"},
+        {"FPSBooster", "Settings.FPSBooster"},
+        {"DisableRendering", "Settings.DisableRendering"},
+        {"HideStats", "Settings.HideStats.Enabled"},
+    }
+    
+    local inputMappings = {
+        {"FishingDelay", "InstantFishing.FishingDelay"},
+        {"CancelDelay", "InstantFishing.CancelDelay"},
+        {"AutoSellInterval", "Shop.AutoSellTimer.Interval"},
+        {"WebhookURL", "Webhook.URL"},
+        {"DiscordID", "Webhook.DiscordID"},
+        {"FreecamSpeed", "CameraView.Freecam.Speed"},
+        {"FreecamSensitivity", "CameraView.Freecam.Sensitivity"},
+    }
+    
+    local dropdownMappings = {
+        {"InstantFishingMode", "InstantFishing.Mode"},
+    }
+    
+    -- Update Toggles
+    for _, mapping in ipairs(toggleMappings) do
+        local refKey, configPath = mapping[1], mapping[2]
+        if ToggleReferences[refKey] and ToggleReferences[refKey].setOn then
+            local val = GetConfigValue(configPath, false)
+            if type(val) == "boolean" then
+                ToggleReferences[refKey].setOn(val, false) 
+            end
+        end
+    end
+    
+    -- Update Inputs
+    for _, mapping in ipairs(inputMappings) do
+        local refKey, configPath = mapping[1], mapping[2]
+        if InputReferences[refKey] and InputReferences[refKey].SetValue then
+            local val = GetConfigValue(configPath, nil)
+            if val ~= nil then
+                InputReferences[refKey].SetValue(val)
+            end
+        end
+    end
+    
+    -- Update Dropdowns
+    for _, mapping in ipairs(dropdownMappings) do
+        local refKey, configPath = mapping[1], mapping[2]
+        if DropdownReferences[refKey] and DropdownReferences[refKey].SetValue then
+            local val = GetConfigValue(configPath, nil)
+            if val ~= nil then
+                DropdownReferences[refKey].SetValue(val)
+            end
+        end
+    end
+    
+    SendNotification("Config", "✓ All settings applied!", 2)
+end
+
 local catConfig = makeCategory(settingsPage, "Save Config", "💾")
 
 -- Config name input
@@ -3247,13 +3351,11 @@ local function RefreshConfigList()
                 end)
                 
                 if loaded then
-                    SendNotification("Config", "✓ Loaded: " .. configName .. "\nReloading GUI...", 2)
+                    SendNotification("Config", "✓ Loaded: " .. configName, 2)
                     
-                    -- Auto re-execute script after short delay
-                    task.delay(1.5, function()
-                        pcall(function()
-                            loadstring(game:HttpGet("https://raw.githubusercontent.com/mriya23/Fish-It/main/JackHub.lua?v=" .. tostring(os.time())))()
-                        end)
+                    -- Apply config to GUI immediately (no re-execute needed!)
+                    task.delay(0.3, function()
+                        ApplyConfigToGUI()
                     end)
                 else
                     SendNotification("Config", "⚠ Failed to load config", 3)
