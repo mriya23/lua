@@ -3484,7 +3484,26 @@ local function RefreshConfigList()
                             for key, value in pairs(tbl) do
                                 local path = prefix == "" and key or (prefix .. "." .. key)
                                 if type(value) == "table" then
-                                    ApplyRecursive(value, path)
+                                    -- Check if it's an array (has numeric keys 1,2,3...)
+                                    local isArray = true
+                                    local maxIndex = 0
+                                    for k, v in pairs(value) do
+                                        if type(k) ~= "number" then
+                                            isArray = false
+                                            break
+                                        end
+                                        maxIndex = math.max(maxIndex, k)
+                                    end
+                                    
+                                    if isArray and maxIndex > 0 then
+                                        -- It's an array, store it directly
+                                        if ConfigSystem and ConfigSystem.Set then
+                                            ConfigSystem.Set(path, value)
+                                        end
+                                    else
+                                        -- It's a table/object, recurse
+                                        ApplyRecursive(value, path)
+                                    end
                                 else
                                     if ConfigSystem and ConfigSystem.Set then
                                         ConfigSystem.Set(path, value)
