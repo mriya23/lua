@@ -537,6 +537,52 @@ local appTitle = new("TextLabel", {
     ZIndex = 6
 })
 
+-- User Profile
+local userProfile = new("Frame", {
+    Parent = scriptHeader,
+    Size = UDim2.new(0, 160, 1, 0),
+    Position = UDim2.new(1, -270, 0, 0),
+    BackgroundTransparency = 1,
+    ZIndex = 6
+})
+
+local userAvatar = new("ImageLabel", {
+    Parent = userProfile,
+    Size = UDim2.new(0, 32, 0, 32),
+    Position = UDim2.new(1, -32, 0.5, -16),
+    BackgroundTransparency = 1,
+    Image = game:GetService("Players"):GetUserThumbnailAsync(localPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420),
+    ZIndex = 7
+})
+new("UICorner", {Parent = userAvatar, CornerRadius = UDim.new(1, 0)})
+new("UIStroke", {Parent = userAvatar, Color = colors.bg3, Thickness = 2})
+
+local userName = new("TextLabel", {
+    Parent = userProfile,
+    Text = localPlayer.DisplayName,
+    Size = UDim2.new(1, -44, 0, 20),
+    Position = UDim2.new(0, 0, 0.5, -12),
+    BackgroundTransparency = 1,
+    Font = Enum.Font.GothamBold,
+    TextSize = 13,
+    TextColor3 = colors.text,
+    TextXAlignment = Enum.TextXAlignment.Right,
+    ZIndex = 7
+})
+
+new("TextLabel", {
+    Parent = userProfile,
+    Text = "@" .. localPlayer.Name,
+    Size = UDim2.new(1, -44, 0, 14),
+    Position = UDim2.new(0, 0, 0.5, 4),
+    BackgroundTransparency = 1,
+    Font = Enum.Font.Gotham,
+    TextSize = 10,
+    TextColor3 = colors.textDim,
+    TextXAlignment = Enum.TextXAlignment.Right,
+    ZIndex = 7
+})
+
 -- Header Buttons
 local headerBtns = new("Frame", {
     Parent = scriptHeader,
