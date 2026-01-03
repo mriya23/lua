@@ -332,7 +332,7 @@ local CRITICAL_MODULES = {"HideStats", "Webhook", "Notify"}
 LoadingNotification.Create()
 
 -- Load SecurityLoader
-local SecurityLoader = loadstring(game:HttpGet("https://raw.githubusercontent.com/akmiliadevi/Tugas_Kuliah/refs/heads/main/SecurityLoader.lua"))()
+local SecurityLoader = loadstring(game:HttpGet("https://raw.githubusercontent.com/mriya23/Fish-It/main/SecurityLoader.lua"))()
 
 if not SecurityLoader then
     LoadingNotification.Complete(false, 0, 1)
@@ -1613,7 +1613,7 @@ end
 -- ============================================
 -- CONFIG SYSTEM
 -- ============================================
-local ConfigSystem = loadstring(game:HttpGet("https://raw.githubusercontent.com/akmiliadevi/Tugas_Kuliah/refs/heads/main/save2.lua"))()
+local ConfigSystem = loadstring(game:HttpGet("https://raw.githubusercontent.com/mriya23/Fish-It/main/SecurityLoader.lua"))()
 
 local function GetConfigValue(path, default)
     if ConfigSystem then
