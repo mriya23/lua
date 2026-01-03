@@ -759,6 +759,53 @@ local resizeHandle = new("TextButton", {
 new("UICorner", {Parent = resizeHandle, CornerRadius = UDim.new(0, 6)})
 
 -- ============================================
+-- MINIMIZE / SHORTCUT LOGIC
+-- ============================================
+
+local isMinimized = false
+local savedSize = win.Size
+local UserInputService = game:GetService("UserInputService")
+
+local function ToggleMinimize()
+    if isMinimized then
+        -- Restore
+        local t1 = TweenService:Create(win, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = savedSize,
+            BackgroundTransparency = 0.25
+        })
+        ConnectionManager:AddTween(t1)
+        t1:Play()
+        contentBg.Visible = true
+        sidebar.Visible = true
+        resizeHandle.Visible = true
+        btnMinHeader.Text = "─"
+        isMinimized = false
+    else
+        -- Minimize
+        savedSize = win.Size
+        local t1 = TweenService:Create(win, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, savedSize.X.Offset, 0, 45),
+            BackgroundTransparency = 0.1
+        })
+        ConnectionManager:AddTween(t1)
+        t1:Play()
+        contentBg.Visible = false
+        sidebar.Visible = false
+        resizeHandle.Visible = false
+        btnMinHeader.Text = "□"
+        isMinimized = true
+    end
+end
+
+ConnectionManager:Add(btnMinHeader.MouseButton1Click:Connect(ToggleMinimize))
+
+ConnectionManager:Add(UserInputService.InputBegan:Connect(function(input, gameProcessed)
+     if input.KeyCode == Enum.KeyCode.RightControl then
+        ToggleMinimize()
+     end
+end))
+
+-- ============================================
 -- PAGES
 -- ============================================
 local pages = {}
