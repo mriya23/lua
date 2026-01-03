@@ -14,18 +14,16 @@ local function CloseExistingGUI()
     
     -- Remove ALL instances with matching name (prevents duplicates from fast re-execution)
     for _, child in ipairs(playerGui:GetChildren()) do
-        if child:IsA("ScreenGui") and child.Name == GUI_IDENTIFIER then
-            pcall(function()
-                -- Quick fade out
-                for _, descendant in ipairs(child:GetDescendants()) do
-                    if descendant:IsA("Frame") or descendant:IsA("TextButton") or descendant:IsA("ImageButton") then
-                        pcall(function() descendant.Visible = false end)
-                    end
-                end
-                child:Destroy()
-            end)
+        if child:IsA("ScreenGui") and (child.Name == GUI_IDENTIFIER or child.Name == "JackHubLoadingNotification") then
+            child:Destroy()
         end
     end
+    
+    -- Explicitly remove any stray floating buttons
+    for _, child in ipairs(playerGui:GetChildren()) do
+        if child.Name == "JackHubFloatingButton" then child:Destroy() end
+    end
+    
     task.wait(0.1) -- Brief wait to ensure cleanup
 end
 
@@ -121,7 +119,7 @@ local function SendNotification(title, text, duration)
             Title = title,
             Text = text,
             Duration = duration or 5,
-            Icon = "rbxassetid://87557537572594"
+            Icon = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420"
         })
     end)
 end
@@ -143,7 +141,7 @@ local function SendNotification(title, text, duration)
             Title = title,
             Text = text,
             Duration = duration or 5,
-            Icon = "rbxassetid://87557537572594"
+            Icon = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420"
         })
     end)
 end
@@ -188,7 +186,7 @@ function LoadingNotification.Create()
             Size = UDim2.new(0, 45, 0, 45),
             Position = UDim2.new(0, 18, 0, 12),
             BackgroundTransparency = 1,
-            Image = "rbxassetid://87557537572594",
+            Image = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420",
             ScaleType = Enum.ScaleType.Fit,
             ZIndex = 3
         })
@@ -518,7 +516,7 @@ local appIcon = new("ImageLabel", {
     Size = UDim2.new(0, 28, 0, 28),
     Position = UDim2.new(0, 16, 0.5, -14),
     BackgroundTransparency = 1,
-    Image = "rbxassetid://87557537572594",
+    Image = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420",
     ZIndex = 6
 })
 
@@ -622,16 +620,17 @@ local savedSize = windowSize
 local UserInputService = game:GetService("UserInputService")
 -- Create Floating Restore Button (Hidden by default)
 local restoreBtn = new("ImageButton", {
-    Parent = gui, -- Parent to ScreenGui directly so it floats freely
+    Name = "JackHubFloatingButton", -- Specific name for anti-duplicate
+    Parent = gui.Parent, -- Parent to PlayerGui to ensure it persists if main GUI toggles, OR keep in gui but handle visibility
     Size = UDim2.new(0, 50, 0, 50),
-    Position = UDim2.new(0, 30, 0.5, -25), -- Default position Left
+    Position = UDim2.new(0, 30, 0.5, -25), 
     BackgroundColor3 = colors.bg2,
     BackgroundTransparency = 0.2,
     BorderSizePixel = 0,
-    Image = "rbxassetid://87557537572594",
+    Image = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420", -- Magic fix for Decal IDs
     Visible = false,
     AutoButtonColor = false,
-    ZIndex = 200 -- High ZIndex to be on top
+    ZIndex = 200 
 })
 new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
 new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
@@ -3256,7 +3255,7 @@ local function createMinimizedIcon()
         BackgroundColor3 = colors.bg2,
         BackgroundTransparency = 0.3,
         BorderSizePixel = 0,
-        Image = "rbxassetid://87557537572594",
+        Image = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420",
         ScaleType = Enum.ScaleType.Fit,
         ZIndex = 100
     })
