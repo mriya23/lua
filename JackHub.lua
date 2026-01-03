@@ -763,40 +763,109 @@ new("UICorner", {Parent = resizeHandle, CornerRadius = UDim.new(0, 6)})
 -- ============================================
 
 local isMinimized = false
-local savedSize = win.Size
+local savedSize = win.Size or UDim2.new(0, 650, 0, 400) -- Fallback
 local UserInputService = game:GetService("UserInputService")
+
+-- Create Floating Restore Button (Hidden by default)
+local restoreBtn = new("ImageButton", {
+    Parent = gui, -- Parent to ScreenGui directly so it floats freely
+    Size = UDim2.new(0, 50, 0, 50),
+    Position = UDim2.new(0, 30, 0.5, -25), -- Default position Left
+    BackgroundColor3 = colors.bg2,
+    BackgroundTransparency = 0.2,
+    BorderSizePixel = 0,
+    Image = "rbxassetid://108722323724088", -- Logo JackHub
+    Visible = false,
+    AutoButtonColor = false,
+    ZIndex = 200 -- High ZIndex to be on top
+})
+new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 14)})
+local restoreStroke = new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
+
+-- Floating Button Effects
+local restoreScale = new("UIScale", {Parent = restoreBtn, Scale = 1})
+ConnectionManager:Add(restoreBtn.MouseEnter:Connect(function()
+    TweenService:Create(restoreBtn, TweenInfo.new(0.3), {BackgroundColor3 = colors.accent, BackgroundTransparency = 0}):Play()
+    TweenService:Create(restoreStroke, TweenInfo.new(0.3), {Transparency = 0, Thickness = 3}):Play()
+    TweenService:Create(restoreScale, TweenInfo.new(0.3, Enum.EasingStyle.Back), {Scale = 1.15}):Play()
+end))
+ConnectionManager:Add(restoreBtn.MouseLeave:Connect(function()
+    TweenService:Create(restoreBtn, TweenInfo.new(0.3), {BackgroundColor3 = colors.bg2, BackgroundTransparency = 0.2}):Play()
+    TweenService:Create(restoreStroke, TweenInfo.new(0.3), {Transparency = 0.5, Thickness = 2}):Play()
+    TweenService:Create(restoreScale, TweenInfo.new(0.3), {Scale = 1}):Play()
+end))
+
+-- Make Floating Button Draggable
+local draggingRestore, dragInputRestore, dragStartRestore, startPosRestore
+ConnectionManager:Add(restoreBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingRestore = true
+        dragStartRestore = input.Position
+        startPosRestore = restoreBtn.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then draggingRestore = false end
+        end)
+    end
+end))
+ConnectionManager:Add(restoreBtn.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInputRestore = input
+    end
+end))
+ConnectionManager:Add(UserInputService.InputChanged:Connect(function(input)
+    if input == dragInputRestore and draggingRestore then
+        local delta = input.Position - dragStartRestore
+        restoreBtn.Position = UDim2.new(startPosRestore.X.Scale, startPosRestore.X.Offset + delta.X, startPosRestore.Y.Scale, startPosRestore.Y.Offset + delta.Y)
+    end
+end))
 
 local function ToggleMinimize()
     if isMinimized then
-        -- Restore
-        local t1 = TweenService:Create(win, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = savedSize,
-            BackgroundTransparency = 0.25
+        -- RESTORE (Maximize)
+        -- Animate Button Out
+        local tOut = TweenService:Create(restoreBtn, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0)
         })
-        ConnectionManager:AddTween(t1)
-        t1:Play()
-        contentBg.Visible = true
-        sidebar.Visible = true
-        resizeHandle.Visible = true
-        btnMinHeader.Text = "─"
+        tOut:Play()
+        task.wait(0.3)
+        restoreBtn.Visible = false
+        
+        -- Show Window
+        win.Visible = true
+        win.Size = UDim2.new(0,0,0,0) -- Start pop
+        local targetSize = (savedSize ~= UDim2.new(0,0,0,0)) and savedSize or UDim2.new(0, 650, 0, 400)
+        
+        local tIn = TweenService:Create(win, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
+            Size = targetSize
+        })
+        tIn:Play()
+        
         isMinimized = false
     else
-        -- Minimize
+        -- MINIMIZE
         savedSize = win.Size
-        local t1 = TweenService:Create(win, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, savedSize.X.Offset, 0, 45),
-            BackgroundTransparency = 0.1
+        
+        -- Animate Window Out (Shrink)
+        local tOut = TweenService:Create(win, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0)
         })
-        ConnectionManager:AddTween(t1)
-        t1:Play()
-        contentBg.Visible = false
-        sidebar.Visible = false
-        resizeHandle.Visible = false
-        btnMinHeader.Text = "□"
+        tOut:Play()
+        task.wait(0.3)
+        win.Visible = false
+        
+        -- Show Floating Button
+        restoreBtn.Size = UDim2.new(0,0,0,0) -- Start small
+        restoreBtn.Visible = true
+        local tIn = TweenService:Create(restoreBtn, TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 50, 0, 50)
+        })
+        tIn:Play()
+        
         isMinimized = true
     end
 end
 
+ConnectionManager:Add(restoreBtn.MouseButton1Click:Connect(ToggleMinimize))
 ConnectionManager:Add(btnMinHeader.MouseButton1Click:Connect(ToggleMinimize))
 
 ConnectionManager:Add(UserInputService.InputBegan:Connect(function(input, gameProcessed)
