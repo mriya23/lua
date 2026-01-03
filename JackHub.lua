@@ -4469,6 +4469,18 @@ end)
 -- Memory management is active
 -- Cleanup will trigger on GUI destroy
 
+-- ============================================
+-- FORCE SYNC UI STATE (Bug Fix)
+-- ============================================
+-- Ensure floating button is HIDDEN if window is OPEN
+if win and restoreBtn then
+    if win.Visible then
+        restoreBtn.Visible = false
+    else
+        restoreBtn.Visible = true
+    end
+end
+
 return LynxGUI
 
 --[[
