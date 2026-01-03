@@ -629,7 +629,7 @@ local restoreBtn = new("ImageButton", {
     Position = UDim2.new(0, 30, 0.5, -24),
     BackgroundColor3 = colors.bg2,
     BackgroundTransparency = 0.2,
-    Image = "rbxassetid://108722323724088",
+    Image = game:GetService("Players"):GetUserThumbnailAsync(localPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150),
     Visible = false,
     ZIndex = 200
 })
