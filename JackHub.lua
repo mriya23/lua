@@ -187,7 +187,7 @@ function LoadingNotification.Create()
             Size = UDim2.new(0, 45, 0, 45),
             Position = UDim2.new(0, 18, 0, 12),
             BackgroundTransparency = 1,
-            Image = "rbxassetid://108722323724088",,
+            Image = "rbxassetid://108722323724088",
             ScaleType = Enum.ScaleType.Fit,
             ZIndex = 3
         })
@@ -197,7 +197,7 @@ function LoadingNotification.Create()
             Size = UDim2.new(1, -80, 0, 24),
             Position = UDim2.new(0, 70, 0, 12),
             BackgroundTransparency = 1,
-            Text = "JackHub Script Loading",,
+            Text = "JackHub Script Loading",
             Font = Enum.Font.GothamBold,
             TextSize = 14,
             TextColor3 = Color3.fromRGB(255, 255, 255),
