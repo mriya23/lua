@@ -2119,7 +2119,6 @@ if AutoFavorite then
     TrackedSpawn(function()
         task.wait(0.5)
         local tiers = GetConfigValue("AutoFavorite.EnabledTiers", {})
-        SendNotification("Debug", "AutoFav Loaded: " .. tostring(#tiers) .. " Tiers", 4)
         
         if CheckboxReferences.AutoFavTiers then CheckboxReferences.AutoFavTiers.SelectSpecific(tiers) end
         
@@ -3284,11 +3283,6 @@ local function ApplyConfigToGUI()
         if CheckboxReferences[refKey] and CheckboxReferences[refKey].SelectSpecific then
             local val = GetConfigValue(configPath, {})
             if type(val) == "table" then
-                if refKey == "AutoFavTiers" then
-                    SendNotification("Debug", "DebugLoad: " .. tostring(#val) .. " Tiers found", 5)
-                elseif refKey == "AutoFavVariants" then
-                    SendNotification("Debug", "DebugLoad: " .. tostring(#val) .. " Variants found", 5)
-                end
                 
                 CheckboxReferences[refKey].SelectSpecific(val)
             end
@@ -3626,17 +3620,7 @@ ConnectionManager:Add(saveConfigBtn.MouseButton1Click:Connect(function()
             return clean
         end
         
-        -- DEBUG: Show what's being saved (with names)
-        if configData.AutoFavorite and configData.AutoFavorite.EnabledTiers then
-            local tierList = {}
-            for k, v in pairs(configData.AutoFavorite.EnabledTiers) do 
-                table.insert(tierList, tostring(v))
-            end
-            local tierNames = table.concat(tierList, ", ")
-            SendNotification("Debug", "DebugSave: [" .. tierNames .. "]", 6)
-        else
-            SendNotification("Debug", "DebugSave: EMPTY (No tiers in ConfigSystem)", 6)
-        end
+
         
         local cleanData = Sanitize(configData)
         if not cleanData then cleanData = {} end
