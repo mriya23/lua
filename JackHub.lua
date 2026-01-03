@@ -620,18 +620,28 @@ local savedSize = windowSize
 local UserInputService = game:GetService("UserInputService")
 -- Create Floating Restore Button (Hidden by default)
 local restoreBtn = new("ImageButton", {
-    Name = "JackHubFloatingButton", -- Specific name for anti-duplicate
-    Parent = gui.Parent, -- Parent to PlayerGui to ensure it persists if main GUI toggles, OR keep in gui but handle visibility
+    Name = "JackHubFloatingButton", 
+    Parent = gui, -- FIXED: Must be inside the ScreenGui
     Size = UDim2.new(0, 50, 0, 50),
     Position = UDim2.new(0, 30, 0.5, -25), 
     BackgroundColor3 = colors.bg2,
     BackgroundTransparency = 0.2,
     BorderSizePixel = 0,
-    Image = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420", -- Magic fix for Decal IDs
-    Visible = false,
+    Image = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420", 
+    Visible = false, -- Default to Hidden
     AutoButtonColor = false,
     ZIndex = 200 
 })
+
+-- NUCLEAR OPTION: Constant check to ensure they are NEVER both visible
+-- This fixes any sync issues or lag spikes causing double UI
+game:GetService("RunService").Heartbeat:Connect(function()
+    if win.Visible and restoreBtn.Visible then
+        restoreBtn.Visible = false
+    elseif not win.Visible and not restoreBtn.Visible then
+        restoreBtn.Visible = true
+    end
+end)
 new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
 new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
 
