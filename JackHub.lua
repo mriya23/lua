@@ -621,17 +621,28 @@ local isMinimized = false
 local originalSize = windowSize -- Store ONCE, never changes
 local isToggling = false -- Debounce
 local UserInputService = game:GetService("UserInputService")
--- Clean up any existing floating buttons (prevent duplicates)
-for _, existingBtn in ipairs(gui:GetChildren()) do
-    if existingBtn.Name == "JackHubFloatingButton" then
-        existingBtn:Destroy()
+
+-- Clean up ANY existing floating buttons in PlayerGui (prevent duplicates)
+local pGui = localPlayer:WaitForChild("PlayerGui")
+for _, child in ipairs(pGui:GetChildren()) do
+    if child.Name == "JackHubFloatingButtonGui" then
+        child:Destroy()
     end
 end
+
+-- Create SEPARATE ScreenGui for floating button (survives independently)
+local floatingGui = new("ScreenGui", {
+    Name = "JackHubFloatingButtonGui",
+    Parent = pGui,
+    ResetOnSpawn = false,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    DisplayOrder = 2147483647
+})
 
 -- Create Floating Restore Button (Hidden by default)
 local restoreBtn = new("ImageButton", {
     Name = "JackHubFloatingButton", 
-    Parent = gui, 
+    Parent = floatingGui, -- Now in SEPARATE gui
     Size = UDim2.new(0, 50, 0, 50),
     Position = UDim2.new(0, 30, 0.5, -25), 
     BackgroundColor3 = colors.bg2,
@@ -643,10 +654,15 @@ local restoreBtn = new("ImageButton", {
     ZIndex = 200 
 })
 
--- SIMPLE FIX: Button visibility is ALWAYS opposite of Window visibility + ZOMBIE CHECK
+-- Heartbeat to sync visibility
 local hb = game:GetService("RunService").Heartbeat:Connect(function()
-    if not win or not win.Parent or not restoreBtn then return end -- Stop if destroyed
-    restoreBtn.Visible = not win.Visible
+    if not win or not win.Parent then 
+        if restoreBtn then restoreBtn.Visible = true end -- Show button if main window is gone
+        return 
+    end
+    if restoreBtn then
+        restoreBtn.Visible = not win.Visible
+    end
 end)
 ConnectionManager:Add(hb)
 new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
