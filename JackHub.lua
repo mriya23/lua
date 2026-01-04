@@ -672,9 +672,11 @@ local function ToggleMinimize()
         end
         
         win.Visible = false
+        restoreBtn.Visible = true -- Explicitly show floating button
         isMinimized = true
     else
         -- Restore: Show Window with animation
+        restoreBtn.Visible = false -- Explicitly hide floating button
         win.Visible = true
         win.Size = UDim2.new(0, 0, 0, 0)
         TweenService:Create(win, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Size = originalSize}):Play()
