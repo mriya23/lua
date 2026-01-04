@@ -134,28 +134,6 @@ local function SendNotification(title, text, duration)
 end
 
 -- ============================================
--- UTILITY FUNCTIONS
--- ============================================
-local function new(class, props)
-    local inst = Instance.new(class)
-    for k, v in pairs(props or {}) do 
-        inst[k] = v 
-    end
-    return inst
-end
-
-local function SendNotification(title, text, duration)
-    pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = text,
-            Duration = duration or 5,
-            Icon = "rbxthumb://type=Asset&id=87557537572594&w=420&h=420"
-        })
-    end)
-end
-
--- ============================================
 -- LOADING NOTIFICATION (Optimized)
 -- ============================================
 local LoadingNotification = {
