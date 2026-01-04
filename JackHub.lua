@@ -101,6 +101,22 @@ function ConnectionManager:Cleanup()
 end
 
 -- ============================================
+-- GLOBAL CLEANUP (KILL ZOMBIES)
+-- ============================================
+-- Kill old script connections when new script starts
+if getgenv then
+    if getgenv().JackHub_ConnectionManager then
+        pcall(function() getgenv().JackHub_ConnectionManager:Cleanup() end)
+    end
+    getgenv().JackHub_ConnectionManager = ConnectionManager
+elseif _G then
+    if _G.JackHub_ConnectionManager then
+        pcall(function() _G.JackHub_ConnectionManager:Cleanup() end)
+    end
+    _G.JackHub_ConnectionManager = ConnectionManager
+end
+
+-- ============================================
 -- TASK TRACKING SYSTEM (DEFINE EARLY!)
 -- ============================================
 local RunningTasks = {}
@@ -629,6 +645,9 @@ new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
 new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
 
 local function ToggleMinimize()
+    -- SAFETY: If this script's GUI is dead, don't run (prevents zombie interference)
+    if not gui or not gui.Parent then return end
+    
     if isToggling then return end -- Debounce: prevent spam
     isToggling = true
     
