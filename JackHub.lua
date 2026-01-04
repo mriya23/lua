@@ -8,6 +8,14 @@ repeat task.wait() until game:IsLoaded()
 -- ANTI-DUPLICATION
 -- ============================================
 local GUI_IDENTIFIER = "JackHubGUI_Galaxy_v2.3"
+local INSTANCE_ID = tick() -- Unique ID for this script instance
+
+-- Store this instance as the active one
+if getgenv then
+    getgenv().JackHub_ActiveInstance = INSTANCE_ID
+elseif _G then
+    _G.JackHub_ActiveInstance = INSTANCE_ID
+end
 
 local function CloseExistingGUI()
     local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
@@ -679,7 +687,13 @@ end
 ConnectionManager:Add(restoreBtn.MouseButton1Click:Connect(ToggleMinimize))
 ConnectionManager:Add(btnMinHeader.MouseButton1Click:Connect(ToggleMinimize))
 ConnectionManager:Add(UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.RightControl then ToggleMinimize() end
+    if input.KeyCode == Enum.KeyCode.RightControl then
+        -- Only respond if this is the active script instance
+        local activeId = (getgenv and getgenv().JackHub_ActiveInstance) or (_G and _G.JackHub_ActiveInstance)
+        if activeId == INSTANCE_ID then
+            ToggleMinimize()
+        end
+    end
 end))
 
 -- Draggable Restore Button
