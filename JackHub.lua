@@ -669,50 +669,37 @@ new("UICorner", {Parent = restoreBtn, CornerRadius = UDim.new(0, 12)})
 new("UIStroke", {Parent = restoreBtn, Color = colors.primary, Thickness = 2, Transparency = 0.5})
 
 local function ToggleMinimize()
-    -- SAFETY: If this script's GUI is dead, don't run (prevents zombie interference)
+    -- SAFETY: If this script's GUI is dead, don't run
     if not gui or not gui.Parent then return end
+    if not floatingGui or not floatingGui.Parent then return end
+    if not restoreBtn then return end
     
     if isToggling then return end -- Debounce: prevent spam
     isToggling = true
     
     if win.Visible then
-        -- Minimize: Hide Window
-        
-        -- POLICE: Destroy zombie GUIs (but NOT our own gui or floatingGui!)
-        local pGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
-        for _, child in ipairs(pGui:GetChildren()) do
-             -- Skip our own GUIs
-             if child == gui or child == floatingGui then
-                 -- Do nothing, this is ours
-             elseif child:IsA("ScreenGui") and (string.find(child.Name, "JackHub") or child.Name == "JackHubGUI_Galaxy_v2.3") then
-                 pcall(function() child:Destroy() end)
-             end
-        end
-        
+        -- Minimize: Hide Window, Show Button
         win.Visible = false
-        restoreBtn.Visible = true -- Explicitly show floating button
+        restoreBtn.Visible = true
         isMinimized = true
     else
-        -- Restore: Show Window with animation
-        restoreBtn.Visible = false -- Explicitly hide floating button
+        -- Restore: Show Window, Hide Button
+        restoreBtn.Visible = false
         win.Visible = true
         win.Size = UDim2.new(0, 0, 0, 0)
         TweenService:Create(win, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Size = originalSize}):Play()
         isMinimized = false
     end
     
-    task.delay(0.35, function() isToggling = false end) -- Allow next toggle after animation
+    task.delay(0.35, function() isToggling = false end)
 end
 
 ConnectionManager:Add(restoreBtn.MouseButton1Click:Connect(ToggleMinimize))
 ConnectionManager:Add(btnMinHeader.MouseButton1Click:Connect(ToggleMinimize))
-ConnectionManager:Add(UserInputService.InputBegan:Connect(function(input)
+ConnectionManager:Add(UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end -- Don't trigger if typing in chat etc
     if input.KeyCode == Enum.KeyCode.RightControl then
-        -- Only respond if this is the active script instance
-        local activeId = (getgenv and getgenv().JackHub_ActiveInstance) or (_G and _G.JackHub_ActiveInstance)
-        if activeId == INSTANCE_ID then
-            ToggleMinimize()
-        end
+        ToggleMinimize()
     end
 end))
 
